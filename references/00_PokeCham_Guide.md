@@ -254,3 +254,18 @@ If required meta/player data or local receipts are missing:
 - The only Claude card layout is the canonical two-column HTML template: Pokémon ASCII from `ascii_bundle.json` on the left, verified data and move chips on the right.
 - Outside Claude/uncertain platforms, card requests must use inline Markdown ASCII printed directly in the chat. Never offer or print Claude HTML there.
 - Do not use ASCII box cards or `art unavailable` placeholders. If an ASCII asset is missing, keep the verified text labels and omit art rather than inventing art.
+
+## 18. v29.41 lint precision and nature display
+
+Receipt-strict lint is a final-output guard, not a parser for its own audit notes. Audit/caveat lines such as “not verified”, “ไม่มีในเกม”, “regex matched”, or “false positive” must not be treated as actionable recommendations.
+
+Common-word entity names need exact context:
+
+- `Trick` inside `Trick Room` is not the move `Trick`.
+- lowercase/common prose such as “Tailwind pressure” is not the ability `Pressure`.
+- `meta baseline` as a workflow step is not a live meta claim by itself.
+
+Public set/card output must show nature effects copied from verifier receipts, e.g. `Jolly (+Spe / -SpA)`, `Modest (+SpA / -Atk)`, `Quiet (+SpA / -Spe)`. Do not rely on user/model memory for nature effects.
+
+Use `spread` or `investment` for Champions 0-32/66 allocation. Bare `EVs` wording is a warning; `252 EV` or `IV` notation remains a failure.
+

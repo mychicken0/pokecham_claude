@@ -2048,6 +2048,32 @@ STAT_DISPLAY_NAMES = {
 }
 
 
+def _nature_effect_fields(nature: str) -> dict:
+    """Return public-safe nature effect display, e.g. Jolly = +Spe / -SpA.
+
+    Neutral natures have no +/- effect in NATURE_MODIFIERS and render as
+    `neutral`. Public output should copy this field instead of asking the
+    model to remember which stat each nature changes.
+    """
+    nkey = _nature_key(nature or "")
+    mods = NATURE_MODIFIERS.get(nkey, {}) if nkey in NATURE_MODIFIERS else {}
+    plus = [STAT_DISPLAY_NAMES[k] for k, v in mods.items() if float(v) > 1.0]
+    minus = [STAT_DISPLAY_NAMES[k] for k, v in mods.items() if float(v) < 1.0]
+    display = "/".join([])
+    if plus or minus:
+        display = " / ".join([*(f"+{x}" for x in plus), *(f"-{x}" for x in minus)])
+    else:
+        display = "neutral" if nkey in NATURE_MODIFIERS else "unknown"
+    return {
+        "nature": nkey.capitalize() if nkey else "",
+        "plus": plus,
+        "minus": minus,
+        "display": display,
+        "source": "NATURE_MODIFIERS enum in verify.py",
+        "rule": "Nature display must include +/- effect in public set/card output, e.g. Jolly (+Spe / -SpA).",
+    }
+
+
 def _spread_display_fields(spread: dict) -> dict:
     """Return copy-safe, labelled spread render fields.
 
@@ -2261,6 +2287,7 @@ def verify_stat(pokemon_name_or_id: str, nature: str, spread_input, state_input=
         "display_name": active_receipt.get("display_name", pokemon_receipt["name"]),
         "active_form_receipt": active_receipt,
         "nature": nkey.capitalize(),
+        "nature_effect": _nature_effect_fields(nkey),
         "spread": spread,
         "base_stats": base,
         "displayed_stats": stats,
@@ -3933,6 +3960,7 @@ def build_public_render(team_receipt: dict) -> dict:
         move_displays = [m.get("display") or (f"{m.get('emoji','')} {m.get('move_name', m.get('move_query',''))}".strip()) for m in moves if m.get("status") == "pass"]
         stats = r.get("displayed_stats", {}).get("displayed_stats", {})
         stats_display = r.get("displayed_stats", {}).get("displayed_stats_display", _stat_display_fields(stats))
+        nature_effect = r.get("displayed_stats", {}).get("nature_effect", _nature_effect_fields(inp.get("nature", "")))
         spread_obj = r.get("spread", {})
         spread_display = spread_obj.get("display_verbose", spread_obj.get("display", ""))
         spread_compact = spread_obj.get("display_compact", spread_display)
@@ -3953,6 +3981,8 @@ def build_public_render(team_receipt: dict) -> dict:
             "speed_role": tf.get("speed_role", _set_speed_role(inp, r, team_receipt.get("team_gates", {}).get("team_fit", {}).get("team_speed_modes", []))),
             "verified_moves": " / ".join(move_displays),
             "nature": inp.get("nature", ""),
+            "nature_effect": nature_effect,
+            "nature_display": (str(inp.get("nature", "")).strip() + (" (" + nature_effect.get("display", "") + ")" if nature_effect.get("display") else "")).strip(),
             "spread_display": spread_display,
             "spread_compact": spread_compact,
             "spread_total": spread_total,
@@ -3969,6 +3999,8 @@ def build_public_render(team_receipt: dict) -> dict:
             "ability": row["ability"],
             "role": row["role"],
             "nature": row["nature"],
+            "nature_effect": row.get("nature_effect", {}),
+            "nature_display": row.get("nature_display", row["nature"]),
             "spread_display": row["spread_display"],
             "spread_compact": row.get("spread_compact", row["spread_display"]),
             "spread_total": row.get("spread_total", ""),
@@ -4094,7 +4126,7 @@ def _render_team_html_cards_from_render(render: dict) -> str:
         item = html.escape(str(block.get("item", ""))) if block.get("item") else ""
         type_text = html.escape(str(trow.get("type", "")))
         ability = html.escape(str(block.get("ability", "")))
-        nature = html.escape(str(block.get("nature", "")))
+        nature = html.escape(str(block.get("nature_display") or block.get("nature", "")))
         spread = html.escape(str(block.get("spread_display", "")))
         total = html.escape(str(block.get("spread_total", "")))
         stats_disp = (block.get("displayed_stats_display", {}) or {}).get("compact", "")
@@ -4252,7 +4284,7 @@ def render_team_markdown(team_payload, style: str = "compact", platform: str = "
                     fit_bits.append(f"Speed role: `{block.get('speed_role')}`")
                 lines.append("**Fit:** " + " · ".join(fit_bits))
             if block.get("nature"):
-                lines.append(f"**Nature:** {block.get('nature','')}")
+                lines.append(f"**Nature:** {block.get('nature_display') or block.get('nature','')}")
             if block.get("spread_display"):
                 lines.append(f"**Investment:** {block.get('spread_display','')} — **Total {block.get('spread_total','')}**")
             stats_disp = block.get("displayed_stats_display", {}) or {}
@@ -4426,6 +4458,80 @@ ENTITY_STOP_NAMES = {
     "protect", "tailwind", "trick room", "fake out", "wide guard", "follow me", "counter",
 }
 
+# Common English words that are also local move/ability names. They should only
+# require entity receipts when used as explicit game entities, not as ordinary
+# prose such as "Tailwind pressure" or "Trick Room".
+COMMON_WORD_ENTITY_EXCEPTIONS = {
+    "ability": {"pressure"},
+    "move": {"trick"},
+}
+
+CAVEAT_OR_AUDIT_LINE_RE = re.compile(
+    r"(?i)(ไม่อยู่ใน|ไม่มีใน|not\s+in|absent|not\s+verified|unverified|ไม่มี.*receipt|"
+    r"ไม่ผ่าน|fail(?:ed)?|ขอแก้|อย่าด้น|regex|pattern|matched|จับคู่|กำลังจับ|"
+    r"ปัญหา|false\s*positive|ควรระบุ|ต้อง verify|do\s+not|ห้าม|ไม่ควรแนะนำ|instead|แทน|ไม่ใช่|not\s+an?|ยังไม่|not\s+claim)"
+)
+
+
+def _is_caveat_or_audit_line(line: str) -> bool:
+    return bool(CAVEAT_OR_AUDIT_LINE_RE.search(str(line or "")))
+
+
+def _is_explicit_entity_context(line: str, name: str, kind: str) -> bool:
+    """True when a common-word name is clearly being used as a game entity."""
+    txt = str(line or "")
+    esc = re.escape(str(name))
+    if re.search(r"[`@:]\s*" + esc + r"|" + esc + r"\s*[:/@]", txt, re.I):
+        return True
+    if kind == "ability" and re.search(r"(?i)(ability|ความสามารถ)\s*[:=\-–—]?\s*`?" + esc, txt):
+        return True
+    if kind == "move" and re.search(r"(?i)(move|ท่า)\s*[:=\-–—]?\s*`?" + esc, txt):
+        return True
+    return False
+
+
+def _is_entity_false_positive_context(kind: str, name: str, line: str) -> bool:
+    nid = normalize_id(name)
+    if _is_caveat_or_audit_line(line):
+        return True
+    if kind == "move" and nid == "trick" and re.search(r"(?i)Trick\s+Room", str(line or "")):
+        return True
+    if nid in COMMON_WORD_ENTITY_EXCEPTIONS.get(kind, set()) and not _is_explicit_entity_context(line, name, kind):
+        return True
+    return False
+
+
+def _looks_like_typechart_line(line: str) -> bool:
+    txt = str(line or "")
+    return bool(re.search(r"(?:→|->|=).*(?:0\s*x|0\.5\s*x|1\s*x|2\s*x|4\s*x|immune|resisted|neutral|super[_\s-]*effective)", txt, re.I))
+
+
+def _has_board_risk_receipt(receipt: dict) -> bool:
+    found = False
+    def walk(x):
+        nonlocal found
+        if found:
+            return
+        if isinstance(x, dict):
+            if x.get("entity") == "threat_audit_receipt" and x.get("status") in {"pass", "pass_with_warnings"}:
+                for slot in x.get("slots", []) or []:
+                    if slot.get("board_risks"):
+                        found = True; return
+            if x.get("board_risks"):
+                found = True; return
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+    walk(receipt or {})
+    return found
+
+
+def _has_nature_display_in_text(line: str, nature: str) -> bool:
+    eff = _nature_effect_fields(nature).get("display", "")
+    return bool(eff and re.search(re.escape(nature) + r"\s*\(" + re.escape(eff) + r"\)", str(line or ""), re.I))
+
 
 def _all_local_entity_names() -> dict:
     """Local positive-whitelist name index used by public entity lint."""
@@ -4534,8 +4640,12 @@ def _public_entity_guard(answer_text: str, receipt: dict):
             nid = normalize_id(hit["name"])
             if nid in verified.get(kind, set()):
                 continue
-            # Avoid failing source/file names or generic policy text.
+            # Avoid failing source/file names, audit/caveat prose, common-word false positives, or generic policy text.
             if re.search(r"receipt|source|whitelist|local|No .* receipt|gate|FAIL_|WARN_|rule", hit["text"], re.I):
+                continue
+            if _is_entity_false_positive_context(kind, hit["name"], hit["text"]):
+                continue
+            if _has_board_risk_receipt(receipt or {}) and re.search(r"(?i)(board\s+risk|ally\s+Earthquake|โดนเพื่อน|ตีเพื่อน|Earthquake\s*→)", hit["text"]):
                 continue
             failures.append({"code": code, "line": hit["line"], "entity": hit["name"], "detail": f"Public {kind} name appears without a matching local verifier receipt.", "text": hit["text"]})
     # Unknown capitalized entity warning in risk/threat sections; hard names should be handled above.
@@ -4578,6 +4688,8 @@ def _typepassive_claim_guard(answer_text: str, receipt: dict):
     for i, line in enumerate(str(answer_text or "").splitlines(), start=1):
         if re.search(r"typepassive receipt|type passive receipt|09_type_passive|No typepassive receipt", line, re.I):
             continue
+        if _is_caveat_or_audit_line(line) or _looks_like_typechart_line(line):
+            continue
         for rgx, code in TYPE_PASSIVE_CLAIM_PATTERNS:
             if rgx.search(line) and not verified.get("typepassive"):
                 failures.append({"code": code, "line": i, "detail": "Type passive/status/weather/hazard claims require verify.py typepassive receipt. Typechart receipt alone is not enough.", "text": line.strip()[:260]})
@@ -4615,8 +4727,10 @@ def _mechanic_claim_guard(answer_text: str, receipt: dict):
             failures.append({"code": "WARN_FORM_AMBIGUOUS_MEGA_RAICHU_X_Y", "line": i, "detail": "Mega Raichu form-specific mechanics require Mega Raichu X/Y, not generic Mega Raichu.", "text": line.strip()[:260]})
         for rgx, code in MECHANIC_CLAIM_PATTERNS:
             if rgx.search(line):
-                if code.endswith("BOARDSCAN_RECEIPT") and not verified.get("boardscan"):
-                    failures.append({"code": code, "line": i, "detail": "Move-target/ally-damage claims require verify.py boardscan receipt.", "text": line.strip()[:260]})
+                if code.endswith("BOARDSCAN_RECEIPT"):
+                    if not (verified.get("boardscan") or _has_board_risk_receipt(receipt or {})):
+                        failures.append({"code": code, "line": i, "detail": "Move-target/ally-damage claims require verify.py boardscan receipt or v29.39+ threataudit board_risks receipt.", "text": line.strip()[:260]})
+                    continue
                 elif code == "FAIL_PROTECT_BYPASS_CLAIM_WITHOUT_LOCAL_MECHANIC":
                     failures.append({"code": code, "line": i, "detail": "Protect bypass claims require an explicit local mechanic receipt; do not import mainline memory.", "text": line.strip()[:260]})
                 elif not has_mech:
@@ -4751,7 +4865,7 @@ STRICT_MAINLINE_MECHANIC_PATTERNS = [
     (re.compile(r"(?i)Drought.*(?:5\s*turn|5\s*เทิร์น|ตั้ง.*แดด|sun)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
     (re.compile(r"(?i)Parting\s+Shot.*(?:-\s*1|Atk|SpA|switch|สลับ|ลด)"), "FAIL_MOVE_SEQUENCE_CLAIM_WITHOUT_MECHANIC_RECEIPT"),
     (re.compile(r"(?i)Solar\s+Beam.*(?:Sun|แดด).*(?:skip|ข้าม|ไม่ต้อง|charge|ชาร์จ)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
-    (re.compile(r"(?i)Weather\s+Ball.*(?:Sun|Rain|แดด|ฝน|Fire|Water|100\s*BP|เปลี่ยน|type)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Weather\s+Ball.*(?:Fire|Water|100\s*BP|เปลี่ยน|type|แรง|คูณ|power|boost)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
     (re.compile(r"(?i)Last\s+Respects.*(?:\+\s*\d+|10%|50\s*BP|ต่อ.*(?:KO|ตาย|faint))"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
     (re.compile(r"(?i)Dual\s+Wingbeat.*(?:2\s*(?:hit|ครั้ง)|40\s*BP|ต่อ hit)"), "FAIL_MOVE_SEQUENCE_CLAIM_WITHOUT_MECHANIC_RECEIPT"),
     (re.compile(r"(?i)Armor\s+Tail.*(?:block|บล็อก|กัน).*priority"), "FAIL_ABILITY_INTERACTION_WITHOUT_INTERACTION_RECEIPT"),
@@ -4836,9 +4950,9 @@ def _receipt_strict_claim_guard(answer_text: str, receipt: dict):
     missing_item_pattern = re.compile(r"(?i)\b(Assault\s+Vest|Clear\s+Amulet|Choice\s+Band|Choice\s+Specs)\b")
     for i, line in enumerate(text.splitlines(), start=1):
         for m in missing_item_pattern.finditer(line):
-            if normalize_id(m.group(1)) not in local_items:
+            if normalize_id(m.group(1)) not in local_items and not _is_caveat_or_audit_line(line):
                 failures.append({"code": "FAIL_ITEM_NOT_IN_LOCAL_DB", "line": i, "entity": m.group(1), "detail": "Item is absent from local 08 item receipts; do not recommend or mention as an available option.", "text": line.strip()[:260]})
-        if re.search(r"FAIL_|WARN_|No .* receipt|ไม่มี.*receipt|unverified|ไม่แน่ใจ|ยังไม่มี.*ยืนยัน|description จาก 08|08 description|rule", line, re.I):
+        if re.search(r"FAIL_|WARN_|No .* receipt|ไม่มี.*receipt|unverified|ไม่แน่ใจ|ยังไม่มี.*ยืนยัน|description จาก 08|08 description|rule", line, re.I) or _is_caveat_or_audit_line(line):
             continue
         for rgx, code in STRICT_MAINLINE_MECHANIC_PATTERNS:
             if not rgx.search(line):
@@ -4851,10 +4965,14 @@ def _receipt_strict_claim_guard(answer_text: str, receipt: dict):
                 failures.append({"code": code, "line": i, "detail": "Exact mechanic/multiplier/stage/turn-count claim requires a local mechanic, interaction, priority, or damage receipt; mainline Pokémon memory is not evidence.", "text": line.strip()[:260]})
     # Manual stat formula leak: Champions stats must come from verify.py stat/render.
     for i, line in enumerate(text.splitlines(), start=1):
-        if re.search(r"(?i)(2\s*[×x*]\s*Base|Base\s*\+\s*140|252\s*EV\b|\bEVs?\b|\bIVs?\b|level\s*50\s*formula|สูตร.*mainline)", line):
+        if re.search(r"(?i)(2\s*[×x*]\s*Base|Base\s*\+\s*140|252\s*EV\b|\bIVs?\b|level\s*50\s*formula|สูตร.*mainline)", line):
             failures.append({"code": "FAIL_MANUAL_STAT_FORMULA_USED", "line": i, "detail": "Do not use mainline stat formulas or EV/IV language for Champions; use verify.py stat/render only.", "text": line.strip()[:260]})
-        if re.search(r"(?i)(นิยม|meta|standard|common|usage|VGC|tournament|สายหลัก|ใช้กัน)", line) and not re.search(r"META_|source|Pikalytics|Pokémon-Zone|Limitless|RK9|LOCAL_FALLBACK|EXPERIMENTAL", line):
-            failures.append({"code": "FAIL_META_CLAIM_WITHOUT_LIVE_SOURCE", "line": i, "detail": "Meta/common/usage claims need an approved live/player source or explicit LOCAL_FALLBACK/EXPERIMENTAL label.", "text": line.strip()[:260]})
+        elif re.search(r"(?i)\bEVs?\b", line):
+            warnings.append({"code": "WARN_EV_LABEL_USE_INVESTMENT", "line": i, "detail": "Use Champions wording 'spread' or 'investment' in public output. Do not label 0-32/66 spread as mainline EVs.", "text": line.strip()[:260]})
+        meta_claim = re.search(r"(?i)(นิยม|standard|common|usage|VGC|tournament|สายหลัก|ใช้กัน|meta\s+(?:core|pick|team|set|spread|usage|นิยม|มาตรฐาน))", line)
+        workflow_only = re.search(r"(?i)(meta\s+baseline|baseline\s+meta|live/player/meta baseline|ขั้นตอน|workflow)", line)
+        if meta_claim and not workflow_only and not re.search(r"META_|source|Pikalytics|Pokémon-Zone|Limitless|RK9|LOCAL_FALLBACK|EXPERIMENTAL", line):
+            failures.append({"code": "FAIL_META_CLAIM_WITHOUT_LIVE_SOURCE", "line": i, "detail": "Meta/common/usage claims need an approved live/player source or explicit LOCAL_FALLBACK/EXPERIMENTAL label. Workflow phrase 'meta baseline' alone is not a meta claim.", "text": line.strip()[:260]})
     return failures, warnings
 
 
@@ -4930,8 +5048,10 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
                 if re.search(bare_join, answer_text, re.I) and expected_type not in answer_text:
                     failures.append({"code": "FAIL_PUBLIC_RENDER_MISSING_TYPE_EMOJI", "pokemon": row.get("pokemon"), "expected_type_display": expected_type})
 
-    if re.search(r"\bEVs?\b|\b252\b", answer_text, re.I):
-        failures.append({"code": "FAIL_PUBLIC_RENDER_EV_STYLE_252", "detail": "Pokémon Champions spreads must be 0-32 per stat and total 66/66"})
+    if re.search(r"\b252\b|\bIVs?\b", answer_text, re.I):
+        failures.append({"code": "FAIL_PUBLIC_RENDER_EV_STYLE_252", "detail": "Pokémon Champions spreads must be 0-32 per stat and total 66/66; never 252 EV/IV notation."})
+    elif re.search(r"\bEVs?\b", answer_text, re.I):
+        warnings.append({"code": "WARN_EV_LABEL_USE_INVESTMENT", "detail": "Use Champions wording 'spread' or 'investment' instead of EVs in public output."})
     if re.search(r"สุ่ม|randomly|guess", answer_text, re.I) and re.search(r"Stat plan|Spread|Investment|สเปรด", answer_text, re.I):
         warnings.append({"code": "WARN_SPREAD_DESCRIBED_AS_GUESS", "detail": "Final spread should be meta baseline or benchmark override, not a bare guess."})
     raw_spread_pattern = r"(?<!\d)(?:\d{1,2}\s*/\s*){5}\d{1,2}(?!\d)"
@@ -4939,6 +5059,11 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
         failures.append({"code": "FAIL_PUBLIC_RENDER_RAW_SPREAD_UNLABELED", "detail": "Bare spread strings like 32/0/32/0/2/0 are not public-safe. Label stats as HP 32 / Atk 0 / Def 32 / SpA 0 / SpD 2 / Spe 0."})
     if re.search(r"\|[^\n]*Item[^\n]*\|[^\n]*Move", answer_text, re.I) and re.search(r"\b(?:Jolly|Adamant|Modest|Timid|Impish|Careful|Calm|Quiet)\s*<br>|\b(?:Jolly|Adamant|Modest|Timid|Impish|Careful|Calm|Quiet)\s*\n\s*\d+\s*/", answer_text, re.I):
         warnings.append({"code": "WARN_PUBLIC_TABLE_TOO_DENSE", "detail": "Nature/spread should be in Detailed sets, not crammed into item/move overview columns."})
+    for nat in NATURE_MODIFIERS:
+        public_nat = nat.capitalize()
+        if re.search(r"(?<![A-Za-z0-9])" + re.escape(public_nat) + r"(?![A-Za-z0-9])", answer_text) and not _has_nature_display_in_text(answer_text, public_nat):
+            warnings.append({"code": "WARN_NATURE_EFFECT_NOT_DISPLAYED", "nature": public_nat, "expected": f"{public_nat} ({_nature_effect_fields(public_nat).get('display')})", "detail": "Public nature display should include +/- effect so users know Jolly/Modest/etc change which stats."})
+            break
     if re.search(r"[┌┐└┘╭╮╰╯]", answer_text):
         failures.append({"code": "FAIL_ASCII_BOX_CARD_LAYOUT", "detail": "Manual ASCII/box-border card layout is disallowed. Claude card must use canonical HTML via widget/artifact; non-Claude card must be inline Markdown ASCII without box borders."})
     if re.search(r"<div[^>]+style=|<pre[^>]+style=|display\s*:\s*flex\s*;", answer_text, re.I):

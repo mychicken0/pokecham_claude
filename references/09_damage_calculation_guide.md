@@ -197,3 +197,15 @@ Tailwind/Trick Room advice must use actual Speed receipts, not vague labels. Com
 
 No speedplan receipt = no public speed-mode recommendation.
 
+## 14. Nature display and stat wording
+
+`verify.py stat` is the source for displayed stats and nature effects. Public output must show both the nature name and its effect: `Adamant (+Atk / -SpA)`, `Jolly (+Spe / -SpA)`, `Calm (+SpD / -Atk)`, etc.
+
+Do not calculate or describe natures from memory. Copy `nature_effect.display` from the stat/render receipt.
+
+Use Champions wording:
+
+- `spread` or `investment`: accepted public wording;
+- `EVs`: warning / repair wording;
+- `252 EV`, `IV`, level-50/mainline formulas: hard failure.
+

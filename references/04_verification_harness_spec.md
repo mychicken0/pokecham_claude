@@ -355,3 +355,25 @@ WARN_META_SEARCH_REQUIRED_FOR_ACTIONABLE_REQUEST
 - Move chips must copy `move.display` with type emoji.
 - Type labels must use verifier type display, e.g. `🌿 Grass / 👻 Ghost`, not bare `Grass/Ghost`.
 - `lint-output` may fail `FAIL_PUBLIC_RENDER_MISSING_MOVE_EMOJI` or `FAIL_PUBLIC_RENDER_MISSING_TYPE_EMOJI` when public output drops emoji.
+
+## v29.41 lint precision notes
+
+`verify.py stat` now returns `nature_effect` and render/card output must use `nature_display` such as `Jolly (+Spe / -SpA)`.
+
+Receipt-strict guards should distinguish:
+
+- audit/caveat prose from recommendations;
+- common words from entity names (`Trick Room` ≠ move `Trick`, prose “pressure” ≠ ability `Pressure`);
+- typechart immunity such as `Ground → Fire/Flying = 0x` from typepassive immunity;
+- `threataudit.board_risks` from missing boardscan when the claim is only a board-risk warning;
+- workflow phrase `meta baseline` from unsupported live meta claims.
+
+New/updated warnings:
+
+```text
+WARN_EV_LABEL_USE_INVESTMENT
+WARN_NATURE_EFFECT_NOT_DISPLAYED
+```
+
+`252 EV`/`IV` remains a hard failure. Simple `EVs` wording is repaired to `spread` / `investment` unless the user is quoting raw input.
+
