@@ -27,7 +27,7 @@ CLI usage (one entity per call, JSON receipt on stdout):
     python verify.py type-regression-tests     # locked typechart regression cases
     python verify.py active-form <slot_or_scenario_json>  # active form / battle stat source receipt
     python verify.py stat <pokemon> <nature> <spread_json_or_text> [state_json]  # final displayed stat receipt via active-form resolver
-    python verify.py damage <scenario_json_or_path>  # board-aware 16-roll damage receipt
+    python verify.py damage <scenario_json_or_path>  # board-aware 16-roll damage receipt with modifier breakdown
     python verify.py sequence <scenario_json_or_path>  # stateful multi-hit / on-hit ability sequence receipt
     python verify.py teamfit <path_to_team.json>   # team-fit / provenance gate receipt
     python verify.py interaction <scenario_json_or_path>  # mechanic relationship receipt, e.g. Prankster Taunt vs Armor Tail
@@ -37,6 +37,7 @@ CLI usage (one entity per call, JSON receipt on stdout):
     python verify.py boardscan <scenario_json_or_path>  # board-level move-target/ally interaction receipt
     python verify.py counterroute <scenario_json_or_path>  # counter/check route receipt for threat rankings
     python verify.py selfaudit <answer.md> <receipt.json>  # bounded final claim audit/lint pass
+    python verify.py receipt-strict <answer.md> <receipt.json>  # strict no-mainline-mechanic claim audit
     python verify.py ascii-assets              # Pokémon ASCII asset bundle status
     python verify.py render <path_to_team.json>    # default compact public-render draft; optional --platform claude --style claude-html-card or --style inline-ascii-card
     python verify.py lint-output <answer.md> <team_receipt.json>  # public-output render lint
@@ -44,7 +45,7 @@ CLI usage (one entity per call, JSON receipt on stdout):
 All functions are also importable for ad-hoc / batch use:
 
     from verify import verify_pokemon, verify_item, verify_move_on_pokemon, \
-        verify_ability_on_pokemon, verify_set, verify_team, verify_mechanic, verify_priority_on_pokemon, verify_type_effectiveness, verify_typepassive, verify_active_form, verify_stat, verify_damage, verify_sequence, verify_teamfit, verify_interaction, verify_boardscan, verify_counterroute, verify_threatfit, verify_spreadfit, verify_itemspread, verify_threataudit, verify_itemthreatfit, ascii_assets_status, render_team_markdown, lint_public_output, verify_final_self_audit
+        verify_ability_on_pokemon, verify_set, verify_team, verify_mechanic, verify_priority_on_pokemon, verify_type_effectiveness, verify_typepassive, verify_active_form, verify_stat, verify_damage, verify_sequence, verify_teamfit, verify_interaction, verify_boardscan, verify_counterroute, verify_threatfit, verify_spreadfit, verify_itemspread, verify_threataudit, verify_itemthreatfit, ascii_assets_status, render_team_markdown, lint_public_output, verify_final_self_audit, verify_receipt_strict
 """
 
 import sys
@@ -2381,6 +2382,81 @@ def _supported_item_damage_modifier(item_receipt: dict, move_type: str, type_mul
     return 1.0, notes
 
 
+
+
+def _strict_explicit_bool(board: dict, *names) -> bool:
+    for n in names:
+        if bool((board or {}).get(n)):
+            return True
+    return False
+
+
+def _strict_weather_damage_modifier(move_type: str, board: dict) -> tuple[float, dict]:
+    """v29.40 strict mode: weather damage multipliers are not inferred from memory.
+
+    The damage engine may always show weather in the breakdown, but it only applies
+    a non-1.0 modifier when the scenario provides an explicit verified weather
+    modifier. This prevents hidden mainline assumptions such as Sun Fire x1.5 or
+    Rain Water x1.5 from entering damage receipts without a local mechanic source.
+    """
+    board = board or {}
+    weather = str(board.get("weather", "none") or "none")
+    if "weather_modifier" in board:
+        try:
+            val = float(board.get("weather_modifier"))
+        except Exception:
+            val = 1.0
+        verified = _strict_explicit_bool(board, "weather_modifier_verified", "field_modifier_verified")
+        return val if verified else 1.0, {
+            "applied": bool(verified and abs(val - 1.0) > 1e-9),
+            "multiplier": val if verified else 1.0,
+            "requested_multiplier": val,
+            "weather": weather,
+            "source": "EXPLICIT_VERIFIED_SCENARIO_MODIFIER" if verified else "UNVERIFIED_SCENARIO_WEATHER_MODIFIER_IGNORED",
+            "rule": "Weather damage modifiers require explicit local mechanic/field receipt; do not infer Sun/Rain multipliers from mainline memory.",
+        }
+    return 1.0, {
+        "applied": False,
+        "multiplier": 1.0,
+        "weather": weather,
+        "source": "NO_WEATHER_DAMAGE_RECEIPT",
+        "rule": "Weather present/mentioned does not by itself change damage in strict receipts.",
+    }
+
+
+def _strict_supported_item_damage_modifier(item_receipt: dict, move_type: str, type_multiplier: float, board: dict) -> tuple[float, list, dict]:
+    """v29.40 strict item-damage policy.
+
+    Item existence is not item-mechanic verification. No automatic Life Orb,
+    Choice Band/Specs, type-boosting item, Expert Belt, or other exact modifier
+    is applied unless the scenario explicitly marks the item modifier verified.
+    """
+    board = board or {}
+    if not item_receipt or item_receipt.get("status") != "pass":
+        return 1.0, [], {"applied": False, "multiplier": 1.0, "source": "NO_ITEM_RECEIPT"}
+    item_name = item_receipt.get("name", item_receipt.get("id", ""))
+    if "item_modifier" in board:
+        try:
+            val = float(board.get("item_modifier"))
+        except Exception:
+            val = 1.0
+        verified = _strict_explicit_bool(board, "item_modifier_verified")
+        return val if verified else 1.0, [], {
+            "applied": bool(verified and abs(val - 1.0) > 1e-9),
+            "multiplier": val if verified else 1.0,
+            "requested_multiplier": val,
+            "item": item_name,
+            "source": "EXPLICIT_VERIFIED_SCENARIO_ITEM_MODIFIER" if verified else "UNVERIFIED_SCENARIO_ITEM_MODIFIER_IGNORED",
+            "rule": "Exact item multipliers need a receipt; item existence alone is not enough.",
+        }
+    return 1.0, [], {
+        "applied": False,
+        "multiplier": 1.0,
+        "item": item_name,
+        "source": "ITEM_EXISTS_BUT_DAMAGE_MECHANIC_NOT_APPLIED",
+        "rule": "v29.40 strict: item damage effects are not inferred from 08/entity existence or mainline memory.",
+    }
+
 def verify_damage(scenario: dict) -> dict:
     """Board-aware single-hit damage receipt.
 
@@ -2452,7 +2528,7 @@ def verify_damage(scenario: dict) -> dict:
 
     attacker_types = _get_types_for_pokemon(attacker_active_id)
     stab = 1.5 if normalize_id(move_type) in attacker_types else 1.0
-    weather = _weather_modifier(move_type, board.get("weather", "none"))
+    weather, weather_breakdown = _strict_weather_damage_modifier(move_type, board)
     spread_mod = 0.75 if (bool(board.get("spread_move", False)) or int(board.get("target_count", 1) or 1) > 1) else 1.0
     screen_mod = float(board.get("screen_modifier", 1.0))
     burn_mod = 0.5 if (normalize_id(category) == "physical" and bool(attacker.get("burned", False)) and not bool(board.get("ignore_burn", False))) else 1.0
@@ -2460,13 +2536,14 @@ def verify_damage(scenario: dict) -> dict:
     item_receipt = None
     item_mod = 1.0
     item_notes = []
+    item_breakdown = {"applied": False, "multiplier": 1.0, "source": "NO_ITEM_PROVIDED"}
     if attacker.get("item"):
         item_receipt = verify_item(attacker.get("item"))
         out["attacker_item_receipt"] = item_receipt
         if item_receipt.get("status") != "pass":
             out["reason"] = "attacker item was provided but item gate failed"
             return out
-        item_mod, item_notes = _supported_item_damage_modifier(item_receipt, move_type, type_multiplier, board)
+        item_mod, item_notes, item_breakdown = _strict_supported_item_damage_modifier(item_receipt, move_type, type_multiplier, board)
 
     explicit_mod = float(board.get("extra_modifier", scenario.get("extra_modifier", 1.0)))
     modifier_without_random = stab * type_multiplier * weather * spread_mod * screen_mod * burn_mod * item_mod * explicit_mod
@@ -2500,6 +2577,54 @@ def verify_damage(scenario: dict) -> dict:
             "extra": explicit_mod,
             "modifier_without_random": modifier_without_random,
         },
+        "modifier_breakdown": {
+            "stab": {
+                "applied": stab != 1.0,
+                "multiplier": stab,
+                "source": "LOCAL_DAMAGE_ENGINE_CORE_STAB",
+                "rule": "STAB is a local damage-engine core multiplier and must be visible in the receipt.",
+            },
+            "type": {
+                "applied": type_multiplier != 1.0,
+                "multiplier": type_multiplier,
+                "source": "verify.py typechart",
+                "receipt": type_receipt.get("display", ""),
+            },
+            "weather": weather_breakdown,
+            "spread": {
+                "applied": spread_mod != 1.0,
+                "multiplier": spread_mod,
+                "source": "LOCAL_DAMAGE_ENGINE_SPREAD_RULE" if spread_mod != 1.0 else "NOT_APPLIED",
+            },
+            "screen": {
+                "applied": screen_mod != 1.0,
+                "multiplier": screen_mod,
+                "source": "EXPLICIT_SCENARIO_SCREEN_MODIFIER" if screen_mod != 1.0 else "NOT_APPLIED",
+            },
+            "burn": {
+                "applied": burn_mod != 1.0,
+                "multiplier": burn_mod,
+                "source": "EXPLICIT_SCENARIO_BURN_FLAG" if burn_mod != 1.0 else "NOT_APPLIED",
+                "rule": "Burn modifier claims in public prose still need a status/mechanic receipt.",
+            },
+            "item": item_breakdown,
+            "ability": {
+                "applied": False,
+                "multiplier": 1.0,
+                "source": "NO_ABILITY_DAMAGE_MECHANIC_RECEIPT",
+                "rule": "Adaptability, Supreme Overlord, weather abilities, and similar ability multipliers are not inferred unless a mechanic/damage receipt explicitly implements them.",
+            },
+            "extra": {
+                "applied": explicit_mod != 1.0,
+                "multiplier": explicit_mod,
+                "source": "EXPLICIT_SCENARIO_EXTRA_MODIFIER" if explicit_mod != 1.0 else "NOT_APPLIED",
+            },
+        },
+        "damage_input_provenance": {
+            "attacker_spread_source": attacker.get("spread_source") or attacker.get("source_label") or "UNLABELED_INPUT",
+            "defender_spread_source": defender.get("spread_source") or defender.get("source_label") or "UNLABELED_INPUT",
+            "rule": "A numeric damage calc can be correct while its input spread is LOCAL_FALLBACK/EXPERIMENTAL. Do not call damage a meta benchmark unless input provenance is META_SPREAD_DIRECT/TOURNAMENT_LIST_DIRECT/USER_PROVIDED.",
+        },
         "item_notes": item_notes,
         "damage_rolls": rolls,
         "damage_percent": [round(min_pct, 1), round(max_pct, 1)],
@@ -2507,7 +2632,7 @@ def verify_damage(scenario: dict) -> dict:
         "ohko_rolls": ohko_count,
         "ko_result": ko_result,
         "source": "verify.py damage + local 01/05-07/08/typechart + 09 damage formula",
-        "rule": "No damage receipt = no KO/survival claim. This receipt uses 16 rolls from 85 to 100.",
+        "rule": "No damage receipt = no KO/survival claim. This receipt uses 16 rolls from 85 to 100 and exposes STAB/type/weather/item/ability modifier sources; hidden multipliers are not public-safe.",
     })
     return out
 
@@ -4318,7 +4443,7 @@ def _all_local_entity_names() -> dict:
 
 
 def _collect_verified_entities_from_receipt(receipt: dict) -> dict:
-    out = {"pokemon": set(), "move": set(), "ability": set(), "item": set(), "mechanic": set(), "boardscan": False, "interaction": False, "counterroute": False, "selfaudit": False, "typepassive": False}
+    out = {"pokemon": set(), "move": set(), "ability": set(), "item": set(), "mechanic": set(), "boardscan": False, "interaction": False, "counterroute": False, "selfaudit": False, "typepassive": False, "priority": False, "damage": False}
     def add(kind, val):
         if val:
             out[kind].add(normalize_id(str(val)))
@@ -4354,6 +4479,11 @@ def _collect_verified_entities_from_receipt(receipt: dict) -> dict:
                 out["selfaudit"] = True
             elif ent == "mechanic" and status == "pass":
                 add("mechanic", x.get("name")); add("mechanic", x.get("id"))
+            elif ent == "priority_receipt" and status == "pass":
+                out["priority"] = True
+                add("move", x.get("move_name")); add("move", x.get("move_id"))
+            elif x.get("mode") in {"damage_verification", "stateful_sequence_verification"} and status == "pass":
+                out["damage"] = True
             for v in x.values():
                 walk(v)
         elif isinstance(x, list):
@@ -4602,6 +4732,141 @@ def _mechanic_overinterpret_guard(answer_text: str, receipt: dict):
     return failures, warnings
 
 
+
+
+# v29.40 receipt-strict / no-mainline-mechanic gate.
+# These patterns catch exact mechanics/multipliers/stages that models often import
+# from mainline Pokémon. Entity existence is not enough; exact claims need local
+# mechanic/priority/damage receipts.
+STRICT_MAINLINE_MECHANIC_PATTERNS = [
+    (re.compile(r"(?i)Intimidate.*(?:-\s*1|ลด.*Atk|ลด.*Attack)"), "FAIL_MAINLINE_MECHANIC_MEMORY_USED"),
+    (re.compile(r"(?i)Sitrus\s+Berry.*(?:25%|1/4|quarter|ฟื้น.*25|ฟื้น.*หนึ่งในสี่)"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Choice\s+Scarf.*(?:1\.5|×\s*1\.5|x\s*1\.5|50%|เพิ่ม.*Speed|คูณ.*Spe)"), "FAIL_ITEM_MECHANIC_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Choice\s+(?:Band|Specs).*?(?:1\.5|×\s*1\.5|x\s*1\.5|50%|เพิ่ม|คูณ)"), "FAIL_ITEM_NOT_IN_LOCAL_DB"),
+    (re.compile(r"(?i)Life\s+Orb.*(?:1\.3|30%|recoil|1/10|คูณ|แรงขึ้น)"), "FAIL_ITEM_MECHANIC_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Adaptability.*(?:STAB.*(?:2|×\s*2|x\s*2)|2\s*x|×\s*2|คูณ.*2)"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Rough\s+Skin.*(?:1/16|recoil|chip|ดาเมจสะท้อน)"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Focus\s+Sash.*(?:รอด|survive|1\s*HP|one\s*hit|เต็มเลือด)"), "FAIL_ITEM_MECHANIC_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Stamina.*(?:\+\s*1|stage|Def(?:ense)?\s*\+|เพิ่ม.*Def)"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Drought.*(?:5\s*turn|5\s*เทิร์น|ตั้ง.*แดด|sun)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Parting\s+Shot.*(?:-\s*1|Atk|SpA|switch|สลับ|ลด)"), "FAIL_MOVE_SEQUENCE_CLAIM_WITHOUT_MECHANIC_RECEIPT"),
+    (re.compile(r"(?i)Solar\s+Beam.*(?:Sun|แดด).*(?:skip|ข้าม|ไม่ต้อง|charge|ชาร์จ)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Weather\s+Ball.*(?:Sun|Rain|แดด|ฝน|Fire|Water|100\s*BP|เปลี่ยน|type)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Last\s+Respects.*(?:\+\s*\d+|10%|50\s*BP|ต่อ.*(?:KO|ตาย|faint))"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Dual\s+Wingbeat.*(?:2\s*(?:hit|ครั้ง)|40\s*BP|ต่อ hit)"), "FAIL_MOVE_SEQUENCE_CLAIM_WITHOUT_MECHANIC_RECEIPT"),
+    (re.compile(r"(?i)Armor\s+Tail.*(?:block|บล็อก|กัน).*priority"), "FAIL_ABILITY_INTERACTION_WITHOUT_INTERACTION_RECEIPT"),
+    (re.compile(r"(?i)Helping\s+Hand.*(?:1\.5|50%|boost|แรงขึ้น|คูณ)"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Storm\s+Drain.*(?:Water|น้ำ).*(?:ดูด|redirect|SpA|\+\s*1)"), "FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)Clear\s+Amulet.*(?:stat|drop|ลด|กัน)"), "FAIL_ITEM_NOT_IN_LOCAL_DB"),
+    (re.compile(r"(?i)(Heat\s+Wave|Rock\s+Slide|Flare\s+Blitz).*?(?:30%|1/3|flinch|burn|recoil|ติดไหม้|ชะงัก)"), "FAIL_MOVE_SECONDARY_EFFECT_CLAIM_WITHOUT_RECEIPT"),
+    (re.compile(r"(?i)(Sun|แดด).*Fire.*(?:1\.5|50%|แรง|คูณ)|(?:Rain|ฝน).*Water.*(?:1\.5|50%|แรง|คูณ)|(?:Sun|แดด).*Water.*(?:0\.5|ครึ่ง|ลด)|(?:Rain|ฝน).*Fire.*(?:0\.5|ครึ่ง|ลด)"), "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT"),
+]
+
+
+def _has_matching_exact_mechanic_receipt(receipt: dict, line: str) -> bool:
+    verified = _collect_verified_entities_from_receipt(receipt or {})
+    line_norm = normalize_id(line or "")
+    # Exact mechanic receipt must match the public line's entity. An unrelated
+    # mechanic/interaction receipt does not authorize mainline numbers elsewhere.
+    for mid in verified.get("mechanic", set()) or set():
+        if mid and mid in line_norm:
+            return True
+    if re.search(r"(?i)priority", line) and verified.get("priority"):
+        return True
+    if re.search(r"(?i)damage|OHKO|2HKO|roll|%|ดาเมจ|รอด|ทน", line) and verified.get("damage"):
+        return True
+    # Numeric exactness (stages, multipliers, turn counts, BP-per-event) needs
+    # an exact mechanic/damage receipt, not just a broad interaction receipt.
+    if re.search(r"(?i)([+−-]\s*\d|\d+(?:\.\d+)?\s*(?:%|BP|turn|เทิร์น)|[×x]\s*\d|\d\s*[×x])", line):
+        return False
+    if verified.get("interaction") and re.search(r"(?i)(Armor\s+Tail|Prankster|Soundproof|Pixilate|Mummy|Wandering\s+Spirit|Gale\s+Wings|No\s+Guard|Contrary)", line):
+        return True
+    return False
+
+
+
+
+def _collect_damage_receipts(obj):
+    out = []
+    seen = set()
+    def walk(x):
+        if isinstance(x, dict):
+            if x.get("mode") == "damage_verification" and x.get("status") == "pass":
+                key = id(x)
+                if key not in seen:
+                    seen.add(key); out.append(x)
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+    walk(obj)
+    return out
+
+
+def _damage_receipt_integrity_guard(answer_text: str, receipt: dict):
+    failures = []
+    warnings = []
+    for idx, dmg in enumerate(_collect_damage_receipts(receipt or {}), start=1):
+        mb = dmg.get("modifier_breakdown")
+        if not isinstance(mb, dict):
+            failures.append({"code": "FAIL_DAMAGE_MULTIPLIER_HIDDEN", "receipt_index": idx, "detail": "Damage receipt lacks visible modifier_breakdown for STAB/type/weather/item/ability."})
+            continue
+        for key in ["stab", "type", "weather", "spread", "item", "ability"]:
+            if key not in mb:
+                failures.append({"code": "FAIL_DAMAGE_MULTIPLIER_HIDDEN", "receipt_index": idx, "modifier": key, "detail": "Damage modifier source missing from modifier_breakdown."})
+            elif not (mb.get(key) or {}).get("source"):
+                failures.append({"code": "FAIL_DAMAGE_MULTIPLIER_HIDDEN", "receipt_index": idx, "modifier": key, "detail": "Damage modifier has no source label."})
+        for key, val in (mb or {}).items():
+            if isinstance(val, dict) and val.get("applied") and re.search(r"UNVERIFIED|NO_.*RECEIPT|NOT_APPLIED|MEMORY", str(val.get("source", "")), re.I):
+                failures.append({"code": "FAIL_DAMAGE_USED_UNVERIFIED_MECHANIC_MODIFIER", "receipt_index": idx, "modifier": key, "source": val.get("source"), "detail": "Applied damage modifier must be backed by a local damage/mechanic receipt."})
+        prov = dmg.get("damage_input_provenance", {}) or {}
+        if re.search(r"(?i)(meta benchmark|meta damage|standard benchmark|benchmark จริง|เมต้า.*benchmark|สายมาตรฐาน)", answer_text or ""):
+            labels = {str(prov.get("attacker_spread_source", "")), str(prov.get("defender_spread_source", ""))}
+            if any(x in labels for x in {"UNLABELED_INPUT", "LOCAL_FALLBACK", "EXPERIMENTAL", ""}):
+                failures.append({"code": "FAIL_DAMAGE_INPUT_PROVENANCE_MISSING", "receipt_index": idx, "provenance": prov, "detail": "Do not present damage calc as a meta benchmark when spread/source provenance is unlabeled, LOCAL_FALLBACK, or EXPERIMENTAL."})
+    return failures, warnings
+
+def _receipt_strict_claim_guard(answer_text: str, receipt: dict):
+    failures = []
+    warnings = []
+    text = str(answer_text or "")
+    verified = _collect_verified_entities_from_receipt(receipt or {})
+    local_items = {normalize_id(n) for n in _all_local_entity_names().get("item", set())}
+    missing_item_pattern = re.compile(r"(?i)\b(Assault\s+Vest|Clear\s+Amulet|Choice\s+Band|Choice\s+Specs)\b")
+    for i, line in enumerate(text.splitlines(), start=1):
+        for m in missing_item_pattern.finditer(line):
+            if normalize_id(m.group(1)) not in local_items:
+                failures.append({"code": "FAIL_ITEM_NOT_IN_LOCAL_DB", "line": i, "entity": m.group(1), "detail": "Item is absent from local 08 item receipts; do not recommend or mention as an available option.", "text": line.strip()[:260]})
+        if re.search(r"FAIL_|WARN_|No .* receipt|ไม่มี.*receipt|unverified|ไม่แน่ใจ|ยังไม่มี.*ยืนยัน|description จาก 08|08 description|rule", line, re.I):
+            continue
+        for rgx, code in STRICT_MAINLINE_MECHANIC_PATTERNS:
+            if not rgx.search(line):
+                continue
+            # Missing/nonexistent item claims should fail even if other receipts exist.
+            if code == "FAIL_ITEM_NOT_IN_LOCAL_DB":
+                failures.append({"code": code, "line": i, "detail": "Do not recommend or explain an item that is absent from local 08 item receipts.", "text": line.strip()[:260]})
+                continue
+            if not _has_matching_exact_mechanic_receipt(receipt or {}, line):
+                failures.append({"code": code, "line": i, "detail": "Exact mechanic/multiplier/stage/turn-count claim requires a local mechanic, interaction, priority, or damage receipt; mainline Pokémon memory is not evidence.", "text": line.strip()[:260]})
+    # Manual stat formula leak: Champions stats must come from verify.py stat/render.
+    for i, line in enumerate(text.splitlines(), start=1):
+        if re.search(r"(?i)(2\s*[×x*]\s*Base|Base\s*\+\s*140|252\s*EV\b|\bEVs?\b|\bIVs?\b|level\s*50\s*formula|สูตร.*mainline)", line):
+            failures.append({"code": "FAIL_MANUAL_STAT_FORMULA_USED", "line": i, "detail": "Do not use mainline stat formulas or EV/IV language for Champions; use verify.py stat/render only.", "text": line.strip()[:260]})
+        if re.search(r"(?i)(นิยม|meta|standard|common|usage|VGC|tournament|สายหลัก|ใช้กัน)", line) and not re.search(r"META_|source|Pikalytics|Pokémon-Zone|Limitless|RK9|LOCAL_FALLBACK|EXPERIMENTAL", line):
+            failures.append({"code": "FAIL_META_CLAIM_WITHOUT_LIVE_SOURCE", "line": i, "detail": "Meta/common/usage claims need an approved live/player source or explicit LOCAL_FALLBACK/EXPERIMENTAL label.", "text": line.strip()[:260]})
+    return failures, warnings
+
+
+def verify_receipt_strict(answer_text: str, receipt: dict) -> dict:
+    lint = lint_public_output(answer_text, receipt)
+    return {
+        "mode": "receipt_strict_audit",
+        "status": "pass" if lint.get("status") == "pass" else "fail",
+        "lint": lint,
+        "rule": "A-pass strict mode: if exact mechanic/multiplier/stage/stat/meta claims lack receipts, remove them. Do not import mainline mechanics.",
+    }
+
 def _semantic_audit_presence_guard(answer_text: str, receipt: dict):
     failures = []
     warnings = []
@@ -4731,6 +4996,12 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
     mech2_failures, mech2_warnings = _mechanic_overinterpret_guard(answer_text, receipt)
     failures.extend(mech2_failures)
     warnings.extend(mech2_warnings)
+    dmg_failures, dmg_warnings = _damage_receipt_integrity_guard(answer_text, receipt)
+    failures.extend(dmg_failures)
+    warnings.extend(dmg_warnings)
+    strict_failures, strict_warnings = _receipt_strict_claim_guard(answer_text, receipt)
+    failures.extend(strict_failures)
+    warnings.extend(strict_warnings)
     sem_failures, sem_warnings = _semantic_audit_presence_guard(answer_text, receipt)
     failures.extend(sem_failures)
     warnings.extend(sem_warnings)
@@ -4741,7 +5012,7 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
         "failures": failures,
         "warnings": warnings,
         "typechart_receipts_found": [r.get("display") for r in _collect_typechart_receipts(receipt)],
-        "rule": "Final public output must match verifier/render fields. No local receipt = no named entity. No meta/player baseline receipt = no actionable final recommendation. No typechart receipt = no type claim. No typepassive receipt = no type passive/status/weather/hazard claim. No boardscan/interaction/mechanic/counterroute receipt = no mechanic, ally-damage, or hard-counter claim. Run selfaudit/lint before final. lint pass is not semantic verification; item/risk/stat/mechanic prose also needs threataudit, stat, mechanic, and itemthreatfit receipts.",
+        "rule": "Final public output must match verifier/render fields. No local receipt = no named entity. No meta/player baseline receipt = no actionable final recommendation. No typechart receipt = no type claim. No typepassive receipt = no type passive/status/weather/hazard claim. No boardscan/interaction/mechanic/counterroute receipt = no mechanic, ally-damage, or hard-counter claim. Run selfaudit/lint before final. lint pass is not semantic verification; item/risk/stat/mechanic prose also needs threataudit, stat, mechanic, and itemthreatfit receipts. v29.40 strict mode: exact mechanics/multipliers/stages/turn counts must be receipt-backed or removed.",
     }
 
 
@@ -5173,6 +5444,12 @@ def _main():
             with open(sys.argv[3], "r", encoding="utf-8") as f:
                 receipt_object = json.load(f)
             result = verify_final_self_audit(answer_text, receipt_object)
+        elif cmd == "receipt-strict":
+            with open(sys.argv[2], "r", encoding="utf-8") as f:
+                answer_text = f.read()
+            with open(sys.argv[3], "r", encoding="utf-8") as f:
+                receipt_object = json.load(f)
+            result = verify_receipt_strict(answer_text, receipt_object)
         elif cmd == "mechanic-regression-tests":
             cases = [
                 {"name": "Intimidate vs Contrary", "scenario": {"actor": {"ability": "Intimidate"}, "target": {"ability": "Contrary"}}, "expect": "pass"},

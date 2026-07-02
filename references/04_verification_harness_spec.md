@@ -1,4 +1,4 @@
-# 04 — Verification Harness Spec v29.39
+# 04 — Verification Harness Spec v29.40
 
 This file owns `scripts/verify.py` commands, receipts, lint/selfaudit, and fail/warning code groups.
 
@@ -39,6 +39,7 @@ python3 scripts/verify.py leadplan <team.json>
 python3 scripts/verify.py threataudit <team.json>
 python3 scripts/verify.py itemthreatfit <team.json>
 python3 scripts/verify.py threatfit <team.json> [meta_threats.json]
+python3 scripts/verify.py receipt-strict <answer.md> <receipt.json>
 ```
 
 Required for final team/set answers:
@@ -153,7 +154,45 @@ WARN_ITEM_MISALIGNED_WITH_BOARD_THREAT
 
 `lint-output` pass is not semantic verification. Do not treat lint as a substitute for typechart/stat/mechanic/threataudit/itemthreatfit receipts.
 
-## 8. Mechanic / interaction commands
+
+## 8. Receipt-strict / no-mainline mechanic gate
+
+Use before final output whenever prose contains mechanics, multipliers, stages, stat formulas, item effects, damage reasoning, or meta/common claims.
+
+```bash
+python3 scripts/verify.py receipt-strict <answer.md> <receipt.json>
+```
+
+Hard rules:
+
+- Entity receipt is not mechanic receipt.
+- If `mechanic` fails, exact numbers must be removed or downgraded to `08 description says ...`.
+- Do not apply mainline Pokémon memory to Champions.
+- Do not use manual stat formulas or EV/IV language.
+- Damage receipts must show `modifier_breakdown` for STAB/type/weather/spread/item/ability.
+- Damage input provenance must label meta/user/local fallback inputs; a local fallback calc is not a meta benchmark.
+
+Fail/warn group:
+
+```text
+FAIL_ITEM_NOT_IN_LOCAL_DB
+FAIL_ITEM_MECHANIC_CLAIM_WITHOUT_RECEIPT
+FAIL_MAINLINE_MECHANIC_MEMORY_USED
+FAIL_MECHANIC_STAGE_CLAIM_WITHOUT_RECEIPT
+FAIL_MOVE_SEQUENCE_CLAIM_WITHOUT_MECHANIC_RECEIPT
+FAIL_MOVE_SECONDARY_EFFECT_CLAIM_WITHOUT_RECEIPT
+FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT
+FAIL_MANUAL_STAT_FORMULA_USED
+FAIL_META_CLAIM_WITHOUT_LIVE_SOURCE
+FAIL_LOCAL_FALLBACK_LABELED_AS_META
+FAIL_DAMAGE_MULTIPLIER_HIDDEN
+FAIL_DAMAGE_USED_UNVERIFIED_MECHANIC_MODIFIER
+FAIL_DAMAGE_INPUT_PROVENANCE_MISSING
+```
+
+Examples that fail without exact receipts: Choice Scarf `×1.5 Spe`, Focus Sash “survives one hit”, Life Orb `×1.3`, Adaptability STAB `×2`, Drought “5 turns”, Sun/Rain damage multipliers, Last Respects exact scaling, Stamina `+1`, Heat Wave/Rock Slide secondary percentages, and any absent item such as Assault Vest, Clear Amulet, Choice Band, or Choice Specs.
+
+## 9. Mechanic / interaction commands
 
 ```bash
 python3 scripts/verify.py mechanic <mechanic_or_move>
@@ -168,7 +207,7 @@ Use these for claims about priority, Prankster, Armor Tail, Soundproof, Pixilate
 
 Do not infer from mainline memory. If the command returns `UNVERIFIED_MECHANIC`, remove or label the claim.
 
-## 9. Type / typepassive / board commands
+## 10. Type / typepassive / board commands
 
 ```bash
 python3 scripts/verify.py typechart <attacking_type> <defender_pokemon_or_type_pair>
@@ -180,7 +219,7 @@ python3 scripts/verify.py boardscan <scenario_json_or_path>
 
 Use `typechart` for multipliers. Use `typepassive` for type-wide passive/status/weather/hazard properties such as Fire burn immunity, Dark vs Prankster status, Rock in sand, Ice in snow, Ghost trapping immunity, Ground vs Thunder Wave, Poison/Steel poison immunity, and grounded Poison clearing Toxic Spikes.
 
-## 10. Stat / speed / damage / sequence commands
+## 11. Stat / speed / damage / sequence commands
 
 ```bash
 python3 scripts/verify.py spread <json_or_text>
@@ -191,7 +230,7 @@ python3 scripts/verify.py sequence <scenario_json_or_path>
 
 No displayed stat, KO, survival, damage roll, weather stat modifier, or staged-hit claim may be public without the matching receipt.
 
-## 11. Render and card commands
+## 12. Render and card commands
 
 ```bash
 python3 scripts/verify.py render <team.json>
@@ -213,22 +252,23 @@ Card command policy:
 - Non-Claude/uncertain platform must not use or suggest Claude HTML. Use `--style inline-ascii-card` / `--style markdown-ascii-card` only after explicit card request, and print it inline in chat.
 - Item ASCII remains disabled. Pokémon ASCII is visual only.
 
-## 12. Lint and final self-audit
+## 13. Lint and final self-audit
 
 ```bash
 python3 scripts/verify.py lint-output <answer.md> <receipt.json>
 python3 scripts/verify.py selfaudit <answer.md> <receipt.json>
+python3 scripts/verify.py receipt-strict <answer.md> <receipt.json>
 ```
 
 Workflow:
 
 ```text
-draft → lint-output → selfaudit → repair once → re-lint → final
+draft → lint-output + receipt-strict → selfaudit → repair once → re-lint/re-strict → final
 ```
 
 Do not add new claims during repair without a new receipt and re-lint.
 
-## 13. Fail/warning code groups
+## 14. Fail/warning code groups
 
 Entity/public output:
 

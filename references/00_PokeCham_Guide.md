@@ -1,4 +1,4 @@
-# 00 — PokeCham Main Contract v29.39
+# 00 — PokeCham Main Contract v29.40
 
 This is the main contract. Other reference files own specialized details and should be cited by role, not duplicated.
 
@@ -23,15 +23,16 @@ For any **actionable Pokémon Champions advice** that recommends, ranks, edits, 
 7. Spreadfit and benchmark override check.
 8. Item-spread coherence and reason receipt check.
 9. Semantic threat audit for item/risk/stat/mechanic prose.
-18. Typechart, typepassive, mechanic, interaction, board, and counterroute verification where claimed.
-10. Stat, speed, damage, and survival benchmark where claimed.
-11. Decision trace: speedplan, leadplan, rejected lines, and item/spread sanity where team/play advice is given.
-12. Render draft.
-13. `lint-output`.
-14. `selfaudit`.
-15. Repair once by removing unsupported claims or running the exact verifier command.
-16. Re-lint.
-17. Final answer.
+10. Receipt-strict claim audit: exact mechanics, multipliers, stages, turn counts, item effects, stat formulas, and meta claims must have receipts.
+11. Typechart, typepassive, mechanic, interaction, board, and counterroute verification where claimed.
+12. Stat, speed, damage, and survival benchmark where claimed.
+13. Decision trace: speedplan, leadplan, rejected lines, and item/spread sanity where team/play advice is given.
+14. Render draft.
+15. `lint-output` and `receipt-strict`.
+16. `selfaudit`.
+17. Repair once by removing unsupported claims or running the exact verifier command.
+18. Re-lint.
+19. Final answer.
 
 Local legality may never replace the live/player baseline for actionable advice. Local files prove what is legal; live/player evidence shows what people actually use.
 
@@ -78,6 +79,22 @@ Public output has no safe zones. Team, set, lead, risk, threat, example, explana
 - No counterroute receipt = no hard-counter/best-answer ranking.
 
 When a named threat is not locally verified, use a generic category: “priority disruption”, “powder/status disruption”, “fast Water attacker”, “Dark-type pressure”, etc.
+
+
+## 6.1 Receipt-strict rule
+
+A local entity receipt proves only that the name exists. It does not prove exact mechanics.
+
+If `verify.py mechanic`, `interaction`, `priority`, `typepassive`, `boardscan`, or `damage` does not prove an exact effect, do not state exact numbers such as `×1.5`, `×2`, `+1`, `25%`, `1/16`, `5 turns`, `2 hits`, `50 BP per KO`, or “survives one hit”.
+
+Safe wording when exact mechanics are missing:
+
+```text
+08 description says ...
+No exact mechanic receipt currently confirms the stage/multiplier/turn count, so do not use that number in final advice.
+```
+
+Blocked without receipts: mainline formulas, EV/IV language, Choice-item multipliers, Focus Sash survival, Life Orb recoil/multiplier, Adaptability STAB ×2, Last Respects exact scaling, weather damage multipliers, and any “common/meta/standard” claim without approved live/player source.
 
 ## 7. Provenance labels
 

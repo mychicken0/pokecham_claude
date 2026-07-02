@@ -1,4 +1,4 @@
-# 09 — Stat / Damage / Type / Board Math Guide v29.39
+# 09 — Stat / Damage / Type / Board Math Guide v29.40
 
 This file owns numeric and mechanical math. Source policy lives in `02`; command syntax lives in `04`.
 
@@ -11,7 +11,7 @@ HP = Base HP + 75 + HP investment
 Non-HP = floor((Base + 20 + investment) * nature_modifier)
 ```
 
-Displayed stats must come from `verify.py stat` or team render receipts. No stat receipt = no stat number or public stat adjective such as ถึก/บาง/เร็ว/ช้า, bulky/frail/fast/slow.
+Displayed stats must come from `verify.py stat` or team render receipts. No stat receipt = no stat number or public stat adjective such as ถึก/บาง/เร็ว/ช้า, bulky/frail/fast/slow. Do not use mainline stat formulas, EV/IV language, or hand-computed stats in final prose.
 
 ## 2. Investment rules
 
@@ -87,7 +87,7 @@ Examples requiring receipts:
 
 ## 7. Damage receipt rules
 
-Use `verify.py damage` for concrete damage claims.
+Use `verify.py damage` for concrete damage claims. v29.40 damage receipts must expose `modifier_breakdown`; if STAB/type/weather/item/ability sources are hidden, the damage receipt is incomplete.
 
 Public claims requiring damage/sequence receipts:
 
@@ -96,6 +96,21 @@ Public claims requiring damage/sequence receipts:
 - damage ranges or percentages.
 - Life Orb / weather / terrain / item damage modifiers.
 - Stamina or staged-hit sequence claims.
+
+
+### 7.1 Damage modifier strictness
+
+`verify.py damage` may use local core STAB and typechart, but every modifier must be visible:
+
+```text
+stab: source LOCAL_DAMAGE_ENGINE_CORE_STAB
+type: source verify.py typechart
+weather/item/ability: applied only with explicit verified receipt; otherwise source says not applied
+```
+
+Do not infer these from memory inside damage prose: Life Orb, Choice Band/Specs, Adaptability, Supreme Overlord, Sun/Rain damage, Weather Ball type/power, Solar Beam charge skip, or Helping Hand.
+
+Damage calc input provenance matters. A valid damage number from a `LOCAL_FALLBACK` spread is not a meta benchmark. Label it as local/experimental unless the spread source is `META_SPREAD_DIRECT`, `TOURNAMENT_LIST_DIRECT`, or `USER_PROVIDED`.
 
 ## 8. Speed and priority resolution
 
