@@ -1,0 +1,24 @@
+rule_id,defender_type,trigger_kind,trigger_name,condition,result,exception,source_status,source_note,public_label
+grass_leech_seed_immunity,Grass,move,Leech Seed,defender_has_grass_type,BLOCKED,,confirmed,curated_type_passive_rule,Grass-type Pokémon are not affected by Leech Seed.
+grass_powder_spore_immunity,Grass,move_tag,powder_or_spore,defender_has_grass_type,BLOCKED,non-powder moves with powder in name require tag receipt,confirmed,curated_type_passive_rule,Grass-type Pokémon are not affected by powder/spore-style effects.
+grass_effect_spore_immunity,Grass,ability,Effect Spore,defender_has_grass_type,BLOCKED,,confirmed,curated_type_passive_rule,Grass-type Pokémon are not affected by Effect Spore.
+fire_burn_immunity,Fire,status_condition,burn,defender_has_fire_type,BLOCKED,,confirmed,curated_type_passive_rule,Fire-type Pokémon cannot be burned.
+electric_paralysis_immunity,Electric,status_condition,paralysis,defender_has_electric_type,BLOCKED,,confirmed,curated_type_passive_rule,Electric-type Pokémon cannot be paralyzed.
+ground_thunder_wave_immunity,Ground,move,Thunder Wave,defender_has_ground_type,BLOCKED,,confirmed,curated_type_passive_rule,Ground-type Pokémon are not affected by Thunder Wave.
+ice_freeze_immunity,Ice,status_condition,freeze,defender_has_ice_type,BLOCKED,,confirmed,curated_type_passive_rule,Ice-type Pokémon cannot be frozen.
+flying_spikes_immunity,Flying,field_hazard,Spikes,defender_has_flying_type_and_not_grounded,BLOCKED,grounded state disables this protection,confirmed,curated_type_passive_rule,Ungrounded Flying-type Pokémon avoid Spikes.
+flying_toxic_spikes_immunity,Flying,field_hazard,Toxic Spikes,defender_has_flying_type_and_not_grounded,BLOCKED,grounded state disables this protection,confirmed,curated_type_passive_rule,Ungrounded Flying-type Pokémon avoid Toxic Spikes.
+flying_sticky_web_immunity,Flying,field_hazard,Sticky Web,defender_has_flying_type_and_not_grounded,BLOCKED,grounded state disables this protection,confirmed,curated_type_passive_rule,Ungrounded Flying-type Pokémon avoid Sticky Web.
+rock_sandstorm_no_chip,Rock,weather,Sandstorm,defender_has_rock_type,NO_WEATHER_CHIP,,confirmed,08_sandstorm_description,Rock-type Pokémon take no sandstorm chip damage.
+ground_sandstorm_no_chip,Ground,weather,Sandstorm,defender_has_ground_type,NO_WEATHER_CHIP,,confirmed,08_sandstorm_description,Ground-type Pokémon take no sandstorm chip damage.
+steel_sandstorm_no_chip,Steel,weather,Sandstorm,defender_has_steel_type,NO_WEATHER_CHIP,,confirmed,08_sandstorm_description,Steel-type Pokémon take no sandstorm chip damage.
+rock_sandstorm_spd_boost,Rock,weather,Sandstorm,defender_has_rock_type,SPD_X1_5,,confirmed,08_sandstorm_description,Rock-type Pokémon get Sp. Def boosted in sandstorm.
+ice_snow_def_boost,Ice,weather,Snow,defender_has_ice_type,DEF_X1_5,,confirmed,08_snowscape_description,Ice-type Pokémon get Defense boosted in snow.
+ice_hail_no_chip,Ice,weather,Hail,defender_has_ice_type,NO_WEATHER_CHIP,legacy/hail format only if Hail exists locally,confirmed,08_hail_description,Ice-type Pokémon take no hail chip damage.
+poison_poison_immunity,Poison,status_condition,poison,defender_has_poison_type,BLOCKED,Corrosion can bypass this immunity,confirmed,08_corrosion_description,"Poison-type Pokémon cannot be poisoned, except by locally verified Corrosion-style bypass."
+poison_bad_poison_immunity,Poison,status_condition,badly_poisoned,defender_has_poison_type,BLOCKED,Corrosion can bypass this immunity,confirmed,08_corrosion_description,"Poison-type Pokémon cannot be badly poisoned, except by locally verified Corrosion-style bypass."
+steel_poison_immunity,Steel,status_condition,poison,defender_has_steel_type,BLOCKED,Corrosion can bypass this immunity,confirmed,08_corrosion_description,"Steel-type Pokémon cannot be poisoned, except by locally verified Corrosion-style bypass."
+steel_bad_poison_immunity,Steel,status_condition,badly_poisoned,defender_has_steel_type,BLOCKED,Corrosion can bypass this immunity,confirmed,08_corrosion_description,"Steel-type Pokémon cannot be badly poisoned, except by locally verified Corrosion-style bypass."
+poison_toxic_spikes_clear,Poison,switch_in_hazard,Toxic Spikes,defender_has_poison_type_and_grounded,CLEAR_FIELD_HAZARD,not active if defender is ungrounded,confirmed,curated_type_passive_rule,Grounded Poison-type Pokémon remove Toxic Spikes on switch-in.
+ghost_trapping_immunity,Ghost,trapping,cannot_escape,defender_has_ghost_type,BLOCKED,does not imply immunity to damage,confirmed,curated_type_passive_rule,Ghost-type Pokémon ignore trapping/cannot-escape effects.
+dark_prankster_status_immunity,Dark,ability_move,Prankster+Status,opposing_prankster_boosted_status_move,BLOCKED,does not block ally status moves or non-Prankster status moves,confirmed,curated_type_passive_rule,Dark-type Pokémon block opposing Prankster-boosted status moves.
