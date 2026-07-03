@@ -1,4 +1,4 @@
-# 04 — Verification Harness Spec v29.40
+# 04 — Verification Harness Spec v29.42
 
 This file owns `scripts/verify.py` commands, receipts, lint/selfaudit, and fail/warning code groups.
 
@@ -224,7 +224,7 @@ Use `typechart` for multipliers. Use `typepassive` for type-wide passive/status/
 ```bash
 python3 scripts/verify.py spread <json_or_text>
 python3 scripts/verify.py stat <pokemon> <nature> <spread_json_or_text> [state_json]
-python3 scripts/verify.py damage <scenario_json_or_path>
+python3 scripts/verify.py damage <scenario_json_or_path> [--require-complete-modifiers]
 python3 scripts/verify.py sequence <scenario_json_or_path>
 ```
 
@@ -377,3 +377,32 @@ WARN_NATURE_EFFECT_NOT_DISPLAYED
 
 `252 EV`/`IV` remains a hard failure. Simple `EVs` wording is repaired to `spread` / `investment` unless the user is quoting raw input.
 
+
+
+## v29.42 structured mechanic data
+
+New data files:
+
+```text
+data/10_structured_mechanic_receipts.jsonl
+data/10_entity_manifest_current.json
+```
+
+New commands:
+
+```bash
+python3 scripts/verify.py mechanic-data-lint
+python3 scripts/verify.py mechanic-coverage
+python3 scripts/verify.py mechanic-effect <entity_name> --context damage
+python3 scripts/verify.py damage <scenario.json> --require-complete-modifiers
+```
+
+Rules:
+
+- Receipt-strict remains active: no receipt = no claim.
+- v29.42 adds structured receipts; it does not parse 08 prose into numbers at runtime.
+- Any structured move/item/ability receipt referencing an entity absent from current 08 fails `mechanic-data-lint`.
+- All current 08 moves/items/abilities must have classification coverage.
+- Complete public OHKO/2HKO/survival claims require `damage_completeness=complete` and `public_ko_claim_allowed=true`.
+- Partial damage receipts must be described as partial/lower-bound and cannot support guaranteed KO/survival claims.
+- Do not add convenience mechanics for items absent from current 08; for this pack, Choice Band and Choice Specs are absent and remain blocked.

@@ -1,4 +1,4 @@
-# 09 — Stat / Damage / Type / Board Math Guide v29.40
+# 09 — Stat / Damage / Type / Board Math Guide v29.42
 
 This file owns numeric and mechanical math. Source policy lives in `02`; command syntax lives in `04`.
 
@@ -87,7 +87,7 @@ Examples requiring receipts:
 
 ## 7. Damage receipt rules
 
-Use `verify.py damage` for concrete damage claims. v29.40 damage receipts must expose `modifier_breakdown`; if STAB/type/weather/item/ability sources are hidden, the damage receipt is incomplete.
+Use `verify.py damage` for concrete damage claims. v29.42 damage receipts must expose `modifier_breakdown`, `damage_completeness`, `public_ko_claim_allowed`, and any `missing_relevant_modifiers`. If STAB/type/weather/item/ability/move-dynamic sources are hidden or missing, the damage receipt is partial/incomplete.
 
 Public claims requiring damage/sequence receipts:
 
@@ -100,15 +100,36 @@ Public claims requiring damage/sequence receipts:
 
 ### 7.1 Damage modifier strictness
 
-`verify.py damage` may use local core STAB and typechart, but every modifier must be visible:
+`verify.py damage` may use local core STAB and typechart, but every modifier must be visible. v29.42 applies exact item/ability/weather/move-dynamic modifiers only from `data/10_structured_mechanic_receipts.jsonl`.
 
 ```text
-stab: source LOCAL_DAMAGE_ENGINE_CORE_STAB
+stab: source LOCAL_DAMAGE_ENGINE_CORE_STAB or structured STAB override
 type: source verify.py typechart
-weather/item/ability: applied only with explicit verified receipt; otherwise source says not applied
+weather/item/ability/move-dynamic: source structured_mechanic_receipt, or listed as missing/partial
 ```
 
-Do not infer these from memory inside damage prose: Life Orb, Choice Band/Specs, Adaptability, Supreme Overlord, Sun/Rain damage, Weather Ball type/power, Solar Beam charge skip, or Helping Hand.
+Do not infer these from memory inside damage prose: Life Orb, Choice Band/Specs, Adaptability, Supreme Overlord, Sun/Rain damage, Weather Ball type/power, Solar Beam charge skip, or Helping Hand. If the entity is absent from current `08_global_moves_abilities_items.csv`, do not add/use the mechanic at all. Choice Band and Choice Specs are absent in this pack and remain blocked.
+
+
+### 7.2 Complete-modifier gate
+
+Use complete mode before public OHKO/2HKO/survival claims:
+
+```bash
+python3 scripts/verify.py damage <scenario.json> --require-complete-modifiers
+```
+
+If complete mode fails, public output may mention only that the local receipt is partial/lower-bound. Do not state guaranteed KO/survival.
+
+Use mechanic data checks after editing the pack:
+
+```bash
+python3 scripts/verify.py mechanic-data-lint
+python3 scripts/verify.py mechanic-coverage
+python3 scripts/verify.py mechanic-effect "Life Orb" --context damage
+```
+
+Every move/item/ability structured receipt must reference an entity confirmed in current 08. Classification coverage is required for all current 08 moves/items/abilities, but classification is not the same as numeric implementation.
 
 Damage calc input provenance matters. A valid damage number from a `LOCAL_FALLBACK` spread is not a meta benchmark. Label it as local/experimental unless the spread source is `META_SPREAD_DIRECT`, `TOURNAMENT_LIST_DIRECT`, or `USER_PROVIDED`.
 

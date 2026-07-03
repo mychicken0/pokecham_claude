@@ -27,7 +27,10 @@ CLI usage (one entity per call, JSON receipt on stdout):
     python verify.py type-regression-tests     # locked typechart regression cases
     python verify.py active-form <slot_or_scenario_json>  # active form / battle stat source receipt
     python verify.py stat <pokemon> <nature> <spread_json_or_text> [state_json]  # final displayed stat receipt via active-form resolver
-    python verify.py damage <scenario_json_or_path>  # board-aware 16-roll damage receipt with modifier breakdown
+    python verify.py damage <scenario_json_or_path> [--require-complete-modifiers]  # board-aware 16-roll damage receipt with structured modifier breakdown
+    python verify.py mechanic-effect <entity_name> [--context damage|speed|priority|boardscan]
+    python verify.py mechanic-coverage
+    python verify.py mechanic-data-lint
     python verify.py sequence <scenario_json_or_path>  # stateful multi-hit / on-hit ability sequence receipt
     python verify.py teamfit <path_to_team.json>   # team-fit / provenance gate receipt
     python verify.py interaction <scenario_json_or_path>  # mechanic relationship receipt, e.g. Prankster Taunt vs Armor Tail
@@ -69,11 +72,15 @@ MOVE_CSVS = [
 ]
 GLOBAL_CSV = os.path.join(DATA_DIR, "08_global_moves_abilities_items.csv")
 TYPE_PASSIVE_CSV = os.path.join(DATA_DIR, "09_type_passive_properties.csv")
+MECHANIC_RECEIPTS_JSONL = os.path.join(DATA_DIR, "10_structured_mechanic_receipts.jsonl")
+ENTITY_MANIFEST_JSON = os.path.join(DATA_DIR, "10_entity_manifest_current.json")
 
 _pokemon_df = None
 _moves_df = None
 _global_df = None
 _type_passive_df = None
+_mechanic_receipts_cache = None
+_mechanic_manifest_cache = None
 _ascii_bundle_cache = None
 
 
@@ -140,6 +147,313 @@ def load_09_type_passive_properties() -> pd.DataFrame:
             _type_passive_df["_norm_trigger"] = _type_passive_df["trigger_name"].apply(normalize_id)
             _type_passive_df["_norm_kind"] = _type_passive_df["trigger_kind"].apply(normalize_id)
     return _type_passive_df
+
+
+# ---------------------------------------------------------------------------
+# v29.42 structured mechanic receipt loader / coverage / exact modifier gates
+# ---------------------------------------------------------------------------
+
+def _jsonl_read(path: str) -> list:
+    rows = []
+    if not os.path.exists(path):
+        return rows
+    with open(path, "r", encoding="utf-8") as f:
+        for line_no, line in enumerate(f, 1):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                obj = json.loads(line)
+                obj["_line_no"] = line_no
+                rows.append(obj)
+            except Exception as e:
+                rows.append({"receipt_id": f"INVALID_JSON_LINE_{line_no}", "status": "invalid", "error": str(e), "_line_no": line_no})
+    return rows
+
+
+def load_10_mechanic_receipts() -> list:
+    global _mechanic_receipts_cache
+    if _mechanic_receipts_cache is None:
+        _mechanic_receipts_cache = _jsonl_read(MECHANIC_RECEIPTS_JSONL)
+    return _mechanic_receipts_cache
+
+
+def load_10_entity_manifest() -> dict:
+    global _mechanic_manifest_cache
+    if _mechanic_manifest_cache is None:
+        if not os.path.exists(ENTITY_MANIFEST_JSON):
+            _mechanic_manifest_cache = {}
+        else:
+            with open(ENTITY_MANIFEST_JSON, "r", encoding="utf-8") as f:
+                _mechanic_manifest_cache = json.load(f)
+    return _mechanic_manifest_cache
+
+
+def _entity_exists_in_08(entity_type: str, entity_id_or_name: str) -> bool:
+    df = load_08_global()
+    et = normalize_id(entity_type)
+    key = normalize_id(entity_id_or_name)
+    match = df[(df["entity_type"].str.lower() == et) & ((df["_norm_id"] == key) | (df["_norm_name"] == key))]
+    return not match.empty
+
+
+def verify_mechanic_data_lint() -> dict:
+    receipts = load_10_mechanic_receipts()
+    failures = []
+    ids = set()
+    for r in receipts:
+        rid = r.get("receipt_id", "")
+        if not rid:
+            failures.append({"code": "FAIL_MISSING_RECEIPT_ID", "line": r.get("_line_no")})
+        elif rid in ids:
+            failures.append({"code": "FAIL_DUPLICATE_RECEIPT_ID", "receipt_id": rid})
+        ids.add(rid)
+        if r.get("status") == "invalid":
+            failures.append({"code": "FAIL_INVALID_JSONL", "receipt_id": rid, "error": r.get("error")})
+        et = normalize_id(r.get("entity_type", ""))
+        if et in {"move", "item", "ability"}:
+            eid = r.get("entity_id") or r.get("entity_name") or ""
+            if not _entity_exists_in_08(et, eid):
+                failures.append({"code": "FAIL_RECEIPT_ENTITY_NOT_IN_LOCAL_08", "receipt_id": rid, "entity_type": et, "entity_id": eid})
+        val = r.get("value")
+        if isinstance(val, dict) and val.get("type") == "multiplier":
+            try:
+                int(val["num"]); int(val["den"])
+            except Exception:
+                failures.append({"code": "FAIL_BAD_MULTIPLIER_VALUE", "receipt_id": rid, "value": val})
+    return {
+        "mode": "mechanic_data_lint",
+        "status": "pass" if not failures else "fail",
+        "receipt_file": "data/10_structured_mechanic_receipts.jsonl",
+        "receipt_count": len(receipts),
+        "failures": failures,
+        "rule": "v29.42: move/item/ability mechanic receipts must reference entities confirmed in current 08. Description text is not parsed into exact numeric effects.",
+    }
+
+
+def verify_mechanic_coverage() -> dict:
+    df = load_08_global()
+    receipts = load_10_mechanic_receipts()
+    classifications = {(normalize_id(r.get("entity_type", "")), normalize_id(r.get("entity_id", ""))) for r in receipts if r.get("effect_kind") == "entity_classification"}
+    coverage = {}
+    missing = []
+    for et in ["item", "move", "ability"]:
+        rows = df[df["entity_type"].str.lower() == et]
+        total = int(len(rows))
+        covered = 0
+        for _, row in rows.iterrows():
+            key = (et, normalize_id(row.get("id", "")))
+            if key in classifications:
+                covered += 1
+            else:
+                missing.append({"entity_type": et, "id": row.get("id", ""), "name": row.get("name", "")})
+        coverage[et] = {"classified": covered, "total": total}
+    status = "pass" if not missing else "fail"
+    return {
+        "mode": "mechanic_coverage",
+        "status": status,
+        "coverage": coverage,
+        "missing_classifications": missing,
+        "numeric_receipts": sum(1 for r in receipts if r.get("public_exact_multiplier_allowed") is True),
+        "receipt_count": len(receipts),
+        "rule": "Every current 08 move/item/ability must be classified. Classification is not the same as numeric implementation; exact public claims require matching structured receipts.",
+    }
+
+
+def _find_mechanic_receipts(entity_type: str = "", entity_name_or_id: str = "", effect_kind: str = "") -> list:
+    et = normalize_id(entity_type)
+    key = normalize_id(entity_name_or_id)
+    ek = normalize_id(effect_kind)
+    out = []
+    for r in load_10_mechanic_receipts():
+        if et and normalize_id(r.get("entity_type", "")) != et:
+            continue
+        if key and key not in {normalize_id(r.get("entity_id", "")), normalize_id(r.get("entity_name", ""))}:
+            continue
+        if ek and normalize_id(r.get("effect_kind", "")) != ek:
+            continue
+        out.append(r)
+    return out
+
+
+def verify_mechanic_effect(entity_name: str, context: str = "") -> dict:
+    key = normalize_id(entity_name)
+    df = load_08_global()
+    matches = df[(df["_norm_id"] == key) | (df["_norm_name"] == key)]
+    if matches.empty:
+        return {"mode": "mechanic_effect", "status": "fail", "query": entity_name, "reason": "entity not found in current 08; do not add/use mechanics for absent entities"}
+    records = []
+    ctx = normalize_id(context)
+    for _, row in matches.iterrows():
+        rs = _find_mechanic_receipts(row.get("entity_type", ""), row.get("id", ""))
+        if ctx:
+            rs = [r for r in rs if ctx in normalize_id(r.get("applies_to", "") + " " + r.get("effect_kind", ""))]
+        records.append({"entity_type": row.get("entity_type"), "id": row.get("id"), "name": row.get("name"), "receipts": rs})
+    return {"mode": "mechanic_effect", "status": "pass", "query": entity_name, "context": context, "matches": records, "rule": "Exact mechanics come from data/10_structured_mechanic_receipts.jsonl only."}
+
+
+def _multiplier_value(receipt: dict) -> float:
+    val = receipt.get("value", {}) if isinstance(receipt, dict) else {}
+    if isinstance(val, dict) and val.get("type") == "multiplier":
+        try:
+            den = int(val.get("den", 1))
+            return int(val.get("num", 1)) / den if den else 1.0
+        except Exception:
+            return 1.0
+    return 1.0
+
+
+def _receipt_ref(receipt: dict) -> dict:
+    return {"receipt_id": receipt.get("receipt_id"), "source": receipt.get("source", "data/10_structured_mechanic_receipts.jsonl")}
+
+
+def _weather_key(board: dict) -> str:
+    w = normalize_id((board or {}).get("weather", "none"))
+    aliases = {"sunnyday":"sun", "harshsunlight":"sun", "harshsun":"sun", "raindance":"rain", "rainy":"rain", "sand":"sandstorm", "snowy":"snow", "hail":"hail"}
+    return aliases.get(w, w or "none")
+
+
+def _resolve_dynamic_move_properties(move_receipt: dict, attacker: dict, board: dict, require_complete: bool = False) -> dict:
+    move_id = normalize_id(move_receipt.get("move_id", ""))
+    move_type = move_receipt.get("type", "")
+    power_raw = move_receipt.get("power", "")
+    try:
+        base_power = int(float(power_raw)) if str(power_raw).strip() else 0
+    except Exception:
+        base_power = 0
+    out = {"status": "pass", "move_id": move_id, "move_type": move_type, "base_power": base_power, "applied": [], "missing": []}
+    weather = _weather_key(board)
+    # Weather Ball exact type/power when weather receipt exists.
+    if move_id == "weatherball" and weather not in {"", "none"}:
+        matches = []
+        for r in _find_mechanic_receipts("move", move_id, "move_type_and_power_override"):
+            if normalize_id((r.get("trigger") or {}).get("weather", "")) == weather:
+                matches.append(r)
+        if matches:
+            r = matches[0]
+            val = r.get("value", {})
+            out["move_type"] = val.get("move_type", move_type)
+            out["base_power"] = int(val.get("base_power", base_power or 0))
+            out["applied"].append({"effect": "move_type_and_power_override", **_receipt_ref(r), "weather": weather})
+        else:
+            out["missing"].append("Weather Ball weather override")
+    # Variable power moves require explicit state.
+    for r in _find_mechanic_receipts("move", move_id, "variable_base_power"):
+        state_key = ((r.get("trigger") or {}).get("requires_state") or "")
+        if state_key:
+            if state_key in attacker or state_key in board:
+                state_val = int(attacker.get(state_key, board.get(state_key, 0)) or 0)
+                val = r.get("value", {})
+                bp = int(val.get("base", 50)) + int(val.get("per_state", 0)) * state_val
+                if val.get("max") is not None:
+                    bp = min(bp, int(val.get("max")))
+                if val.get("min") is not None:
+                    bp = max(bp, int(val.get("min")))
+                out["base_power"] = bp
+                out["applied"].append({"effect": "variable_base_power", "state": state_key, "state_value": state_val, **_receipt_ref(r)})
+            else:
+                out["missing"].append(f"{move_receipt.get('move_name', move_id)} variable power state: {state_key}")
+    if out["missing"] and require_complete:
+        out["status"] = "fail"
+        out["reason"] = "missing dynamic move receipt/state for complete damage"
+    return out
+
+
+def _resolve_stab_multiplier(attacker_types: list, move_type: str, attacker_ability_receipt: dict = None) -> tuple[float, dict]:
+    type_match = normalize_id(move_type) in set(attacker_types or [])
+    if attacker_ability_receipt and attacker_ability_receipt.get("status") == "pass" and type_match:
+        aid = normalize_id(attacker_ability_receipt.get("ability_id") or attacker_ability_receipt.get("ability_name", ""))
+        rs = _find_mechanic_receipts("ability", aid, "stab_override")
+        if rs:
+            mult = _multiplier_value(rs[0])
+            return mult, {"applied": True, "multiplier": mult, "source": "structured_mechanic_receipt", **_receipt_ref(rs[0]), "rule": "STAB override came from structured ability receipt."}
+    mult = 1.5 if type_match else 1.0
+    return mult, {"applied": mult != 1.0, "multiplier": mult, "source": "LOCAL_DAMAGE_ENGINE_CORE_STAB", "rule": "Default STAB is a local damage-engine core multiplier; STAB overrides require structured receipts."}
+
+
+def _structured_weather_damage_modifier(move_type: str, board: dict) -> tuple[float, dict, list]:
+    weather = _weather_key(board)
+    if weather in {"", "none"}:
+        return 1.0, {"applied": False, "multiplier": 1.0, "weather": weather, "source": "NO_WEATHER"}, []
+    for r in load_10_mechanic_receipts():
+        if normalize_id(r.get("entity_type", "")) != "field" or normalize_id(r.get("effect_kind", "")) != "damagemultiplier":
+            continue
+        trig = r.get("trigger") or {}
+        if normalize_id(trig.get("weather", "")) == weather and normalize_id(trig.get("move_type", "")) == normalize_id(move_type):
+            mult = _multiplier_value(r)
+            return mult, {"applied": mult != 1.0, "multiplier": mult, "weather": weather, "source": "structured_mechanic_receipt", **_receipt_ref(r)}, []
+    return 1.0, {"applied": False, "multiplier": 1.0, "weather": weather, "source": "MISSING_STRUCTURED_WEATHER_DAMAGE_RECEIPT"}, [f"weather damage modifier for {weather}/{move_type}"]
+
+
+def _structured_item_damage_modifier(item_receipt: dict, holder: str, move_type: str, category: str, type_multiplier: float) -> tuple[float, list, dict, list]:
+    if not item_receipt or item_receipt.get("status") != "pass":
+        return 1.0, [], {"applied": False, "multiplier": 1.0, "source": "NO_ITEM_RECEIPT"}, []
+    iid = normalize_id(item_receipt.get("id", ""))
+    wanted = "defender_damage_multiplier" if holder == "defender" else "damage_multiplier"
+    applied = []
+    for r in _find_mechanic_receipts("item", iid, wanted):
+        trig = r.get("trigger") or {}
+        if normalize_id(trig.get("holder", holder)) != holder:
+            continue
+        if trig.get("move_type") and normalize_id(trig.get("move_type")) != normalize_id(move_type):
+            continue
+        if trig.get("incoming_move_type") and normalize_id(trig.get("incoming_move_type")) != normalize_id(move_type):
+            continue
+        cats = trig.get("move_category")
+        if cats and normalize_id(category) not in {normalize_id(x) for x in cats}:
+            continue
+        if trig.get("requires_type_multiplier_gt") is not None:
+            try:
+                if not (type_multiplier > float(trig.get("requires_type_multiplier_gt"))):
+                    continue
+            except Exception:
+                continue
+        applied.append(r)
+    if applied:
+        mult = 1.0
+        refs = []
+        for r in applied:
+            mult *= _multiplier_value(r)
+            refs.append(_receipt_ref(r))
+        return mult, [f"{item_receipt.get('name', iid)} structured {holder} damage modifier applied."], {"applied": abs(mult - 1.0) > 1e-9, "multiplier": mult, "item": item_receipt.get("name", iid), "source": "structured_mechanic_receipt", "receipts": refs}, []
+    # No relevant receipt: not all items are damage items. Missing only matters for known candidate categories supplied by user.
+    return 1.0, [], {"applied": False, "multiplier": 1.0, "item": item_receipt.get("name", iid), "source": "NO_RELEVANT_STRUCTURED_ITEM_DAMAGE_RECEIPT"}, []
+
+
+def _structured_ability_damage_modifier(attacker_ability_receipt: dict, move_type: str, category: str, base_power: int, board: dict, attacker: dict) -> tuple[float, dict, list]:
+    if not attacker_ability_receipt or attacker_ability_receipt.get("status") != "pass":
+        return 1.0, {"applied": False, "multiplier": 1.0, "source": "NO_ABILITY_PROVIDED"}, []
+    aid = normalize_id(attacker_ability_receipt.get("ability_id") or attacker_ability_receipt.get("ability_name", ""))
+    weather = _weather_key(board)
+    applied = []
+    missing = []
+    for r in _find_mechanic_receipts("ability", aid, "damage_multiplier"):
+        trig = r.get("trigger") or {}
+        if trig.get("move_type") and normalize_id(trig.get("move_type")) != normalize_id(move_type):
+            continue
+        cats = trig.get("move_category")
+        if cats and normalize_id(category) not in {normalize_id(x) for x in cats}:
+            continue
+        if trig.get("weather") and normalize_id(trig.get("weather")) != weather:
+            continue
+        if trig.get("base_power_lte") is not None:
+            try:
+                if not (int(base_power) <= int(trig.get("base_power_lte"))):
+                    continue
+            except Exception:
+                continue
+        req = trig.get("requires_flag")
+        if req and not bool(board.get(req) or attacker.get(req)):
+            missing.append(f"ability {attacker_ability_receipt.get('ability_name', aid)} requires flag {req}")
+            continue
+        applied.append(r)
+    if applied:
+        mult = 1.0
+        refs=[]
+        for r in applied:
+            mult *= _multiplier_value(r); refs.append(_receipt_ref(r))
+        return mult, {"applied": abs(mult - 1.0) > 1e-9, "multiplier": mult, "ability": attacker_ability_receipt.get("ability_name", aid), "source": "structured_mechanic_receipt", "receipts": refs}, []
+    return 1.0, {"applied": False, "multiplier": 1.0, "ability": attacker_ability_receipt.get("ability_name", aid), "source": "NO_APPLICABLE_STRUCTURED_ABILITY_DAMAGE_RECEIPT" if not missing else "MISSING_STRUCTURED_ABILITY_CONDITION_RECEIPT"}, missing
 
 
 def _find_pokemon_row(pokemon_name_or_id: str):
@@ -2487,18 +2801,16 @@ def _strict_supported_item_damage_modifier(item_receipt: dict, move_type: str, t
 def verify_damage(scenario: dict) -> dict:
     """Board-aware single-hit damage receipt.
 
-    Required scenario fields:
-    {
-      "attacker": {"pokemon": "Garchomp", "nature": "Adamant", "spread": {...}, "move": "Earthquake", "item": "Life Orb"},
-      "defender": {"pokemon": "Archaludon", "nature": "Modest", "spread": {...}, "ability": "Stamina"},
-      "board": {"level": 50, "weather": "none", "spread_move": true/false, "target_count": 1/2, "attacker_stages": {}, "defender_stages": {}}
-    }
+    v29.42 adds structured mechanic receipts. If `require_complete_modifiers`
+    is true, missing relevant dynamic move/item/ability/weather receipts fail
+    instead of silently producing a lower-bound receipt.
     """
     attacker = scenario.get("attacker", {})
     defender = scenario.get("defender", {})
     board = scenario.get("board", {}) or {}
+    require_complete = bool(scenario.get("require_complete_modifiers") or board.get("require_complete_modifiers"))
     level = int(board.get("level", scenario.get("level", 50)))
-    out = {"mode": "damage_verification", "status": "fail", "scenario": scenario}
+    out = {"mode": "damage_verification", "engine_version": "v29.42-mechanicdata-complete-damageengine", "status": "fail", "scenario": scenario}
 
     atk_stat_receipt = _build_stat_from_side(attacker, "attacker")
     def_stat_receipt = _build_stat_from_side(defender, "defender")
@@ -2515,20 +2827,32 @@ def verify_damage(scenario: dict) -> dict:
     if move_receipt.get("status") != "pass":
         out["reason"] = "attacker move gate failed"
         return out
+
+    dyn = _resolve_dynamic_move_properties(move_receipt, attacker, board, require_complete=require_complete)
+    out["dynamic_move_receipt"] = dyn
+    if dyn.get("status") != "pass":
+        out["reason"] = dyn.get("reason", "dynamic move resolution failed")
+        out["missing_relevant_modifiers"] = dyn.get("missing", [])
+        out["damage_completeness"] = "incomplete"
+        out["public_ko_claim_allowed"] = False
+        return out
+
     category = move_receipt.get("category", "")
     atk_key, def_key = _infer_damage_stats(category)
     if atk_key is None:
         out["reason"] = "move is not Physical/Special damage or category is unknown; use mechanics-only mode"
         return out
     try:
-        power = int(float(attacker.get("power", move_receipt.get("power", 0))))
+        power = int(float(attacker.get("power", dyn.get("base_power", move_receipt.get("power", 0)))))
     except Exception:
         power = 0
     if power <= 0:
         out["reason"] = "move power missing/zero/variable; exact damage cannot be calculated without resolved power"
+        out["damage_completeness"] = "incomplete"
+        out["public_ko_claim_allowed"] = False
         return out
 
-    move_type = move_receipt.get("type", "")
+    move_type = dyn.get("move_type") or move_receipt.get("type", "")
     type_receipt = verify_type_effectiveness(move_type, defender_active_id)
     out["type_receipt"] = type_receipt
     out["typechart_receipt"] = type_receipt
@@ -2539,10 +2863,23 @@ def verify_damage(scenario: dict) -> dict:
     if type_multiplier == 0.0:
         out.update({
             "status": "pass",
+            "resolved_move": {"move_name": move_receipt.get("move_name"), "type": move_type, "category": category, "base_power": int(dyn.get("base_power", 0) or 0), "dynamic_move_receipt": dyn},
+            "modifier_stack": {"type": 0.0, "modifier_without_random": 0.0},
+            "modifier_breakdown": {
+                "stab": {"applied": False, "multiplier": 1.0, "source": "NOT_EVALUATED_TYPE_IMMUNITY"},
+                "type": {"applied": True, "multiplier": 0.0, "source": "verify.py typechart", "receipt": type_receipt.get("display", "")},
+                "weather": {"applied": False, "multiplier": 1.0, "source": "NOT_EVALUATED_TYPE_IMMUNITY"},
+                "spread": {"applied": False, "multiplier": 1.0, "source": "NOT_EVALUATED_TYPE_IMMUNITY"},
+                "item": {"applied": False, "multiplier": 1.0, "source": "NOT_EVALUATED_TYPE_IMMUNITY"},
+                "ability": {"applied": False, "multiplier": 1.0, "source": "NOT_EVALUATED_TYPE_IMMUNITY"},
+            },
             "damage_rolls": [0]*16,
             "damage_percent": [0.0, 0.0],
             "ko_result": "NO_DAMAGE_TYPE_IMMUNITY",
-            "rule": "Type multiplier is 0.0; do not force minimum 1 damage unless a verified exception exists.",
+            "damage_completeness": "complete",
+            "public_ko_claim_allowed": True,
+            "missing_relevant_modifiers": [],
+            "rule": "Type multiplier is 0.0; do not force minimum 1 damage unless a verified exception exists. Other damage modifiers are not relevant after confirmed immunity.",
         })
         return out
 
@@ -2553,27 +2890,66 @@ def verify_damage(scenario: dict) -> dict:
     atk_eff = math.floor(atk_raw * _stat_stage_multiplier(atk_stage))
     def_eff = max(1, math.floor(def_raw * _stat_stage_multiplier(def_stage)))
 
+    missing = []
+    missing.extend(dyn.get("missing", []))
+
+    attacker_ability_receipt = None
+    if attacker.get("ability"):
+        attacker_ability_receipt = verify_ability_on_pokemon(attacker_active_id, attacker.get("ability"))
+        out["attacker_ability_receipt"] = attacker_ability_receipt
+        if attacker_ability_receipt.get("status") != "pass":
+            out["reason"] = "attacker ability was provided but ability gate failed"
+            return out
+
     attacker_types = _get_types_for_pokemon(attacker_active_id)
-    stab = 1.5 if normalize_id(move_type) in attacker_types else 1.0
-    weather, weather_breakdown = _strict_weather_damage_modifier(move_type, board)
+    stab, stab_breakdown = _resolve_stab_multiplier(attacker_types, move_type, attacker_ability_receipt)
+    weather, weather_breakdown, weather_missing = _structured_weather_damage_modifier(move_type, board)
+    missing.extend(weather_missing)
+
     spread_mod = 0.75 if (bool(board.get("spread_move", False)) or int(board.get("target_count", 1) or 1) > 1) else 1.0
     screen_mod = float(board.get("screen_modifier", 1.0))
     burn_mod = 0.5 if (normalize_id(category) == "physical" and bool(attacker.get("burned", False)) and not bool(board.get("ignore_burn", False))) else 1.0
 
-    item_receipt = None
-    item_mod = 1.0
     item_notes = []
-    item_breakdown = {"applied": False, "multiplier": 1.0, "source": "NO_ITEM_PROVIDED"}
+    attacker_item_breakdown = {"applied": False, "multiplier": 1.0, "source": "NO_ITEM_PROVIDED"}
+    attacker_item_mod = 1.0
     if attacker.get("item"):
         item_receipt = verify_item(attacker.get("item"))
         out["attacker_item_receipt"] = item_receipt
         if item_receipt.get("status") != "pass":
             out["reason"] = "attacker item was provided but item gate failed"
             return out
-        item_mod, item_notes, item_breakdown = _strict_supported_item_damage_modifier(item_receipt, move_type, type_multiplier, board)
+        attacker_item_mod, notes, attacker_item_breakdown, miss = _structured_item_damage_modifier(item_receipt, "attacker", move_type, category, type_multiplier)
+        item_notes.extend(notes); missing.extend(miss)
+
+    defender_item_breakdown = {"applied": False, "multiplier": 1.0, "source": "NO_DEFENDER_ITEM_PROVIDED"}
+    defender_item_mod = 1.0
+    if defender.get("item"):
+        def_item_receipt = verify_item(defender.get("item"))
+        out["defender_item_receipt"] = def_item_receipt
+        if def_item_receipt.get("status") != "pass":
+            out["reason"] = "defender item was provided but item gate failed"
+            return out
+        defender_item_mod, notes, defender_item_breakdown, miss = _structured_item_damage_modifier(def_item_receipt, "defender", move_type, category, type_multiplier)
+        item_notes.extend(notes); missing.extend(miss)
+
+    ability_mod, ability_breakdown, ability_missing = _structured_ability_damage_modifier(attacker_ability_receipt, move_type, category, power, board, attacker)
+    # Missing ability condition flags make the receipt partial; complete mode turns them into a hard fail.
+    missing.extend(ability_missing)
+
+    helping_hand_mod = 1.0
+    helping_hand_breakdown = {"applied": False, "multiplier": 1.0, "source": "NOT_APPLIED"}
+    if bool(board.get("helping_hand")):
+        hhs = [r for r in load_10_mechanic_receipts() if r.get("receipt_id") == "MECH_FIELD_HELPINGHAND_DAMAGE_001"]
+        if hhs:
+            helping_hand_mod = _multiplier_value(hhs[0])
+            helping_hand_breakdown = {"applied": True, "multiplier": helping_hand_mod, "source": "structured_mechanic_receipt", **_receipt_ref(hhs[0])}
+        else:
+            missing.append("Helping Hand damage modifier")
+            helping_hand_breakdown = {"applied": False, "multiplier": 1.0, "source": "MISSING_STRUCTURED_HELPING_HAND_RECEIPT"}
 
     explicit_mod = float(board.get("extra_modifier", scenario.get("extra_modifier", 1.0)))
-    modifier_without_random = stab * type_multiplier * weather * spread_mod * screen_mod * burn_mod * item_mod * explicit_mod
+    modifier_without_random = stab * type_multiplier * weather * spread_mod * screen_mod * burn_mod * attacker_item_mod * defender_item_mod * ability_mod * helping_hand_mod * explicit_mod
     base = math.floor(math.floor(math.floor((math.floor((2 * level) / 5) + 2) * power * atk_eff / def_eff) / 50) + 2)
     rolls = [max(1, math.floor(base * modifier_without_random * r / 100)) for r in range(85, 101)]
     hp = int(def_stat_receipt["displayed_stats"]["hp"])
@@ -2586,11 +2962,31 @@ def verify_damage(scenario: dict) -> dict:
         ko_result = "SURVIVES_ONE_HIT_16_OF_16"
     else:
         ko_result = f"OHKO_CHANCE_{ohko_count}_OF_16"
+
+    # In normal mode, missing relevant modifier labels make the receipt partial.
+    damage_completeness = "complete" if not missing else "partial"
+    public_ko_allowed = damage_completeness == "complete"
+    if require_complete and missing:
+        out.update({
+            "status": "fail",
+            "reason": "complete damage required but one or more relevant modifiers/dynamic states are missing",
+            "missing_relevant_modifiers": missing,
+            "damage_completeness": "incomplete",
+            "public_ko_claim_allowed": False,
+            "partial_rolls_if_ignored": rolls,
+            "modifier_breakdown": {
+                "stab": stab_breakdown, "type": {"applied": type_multiplier != 1.0, "multiplier": type_multiplier, "source": "verify.py typechart", "receipt": type_receipt.get("display", "")},
+                "weather": weather_breakdown, "item": attacker_item_breakdown, "defender_item": defender_item_breakdown, "ability": ability_breakdown,
+            },
+        })
+        return out
+
     out.update({
         "status": "pass",
         "level": level,
         "active_form_receipts": {"attacker": atk_stat_receipt.get("active_form_receipt"), "defender": def_stat_receipt.get("active_form_receipt")},
         "stat_used": {"attacker": atk_key, "defender": def_key, "attacker_raw": atk_raw, "defender_raw": def_raw, "attacker_effective": atk_eff, "defender_effective": def_eff, "attacker_stage": int(atk_stage), "defender_stage": int(def_stage)},
+        "resolved_move": {"move_name": move_receipt.get("move_name"), "type": move_type, "category": category, "base_power": power, "dynamic_move_receipt": dyn},
         "base_power": power,
         "base_damage_before_modifier": base,
         "modifier_stack": {
@@ -2600,52 +2996,25 @@ def verify_damage(scenario: dict) -> dict:
             "spread": spread_mod,
             "screen": screen_mod,
             "burn": burn_mod,
-            "item": item_mod,
+            "item": attacker_item_mod,
+            "defender_item": defender_item_mod,
+            "ability": ability_mod,
+            "helping_hand": helping_hand_mod,
             "extra": explicit_mod,
             "modifier_without_random": modifier_without_random,
         },
         "modifier_breakdown": {
-            "stab": {
-                "applied": stab != 1.0,
-                "multiplier": stab,
-                "source": "LOCAL_DAMAGE_ENGINE_CORE_STAB",
-                "rule": "STAB is a local damage-engine core multiplier and must be visible in the receipt.",
-            },
-            "type": {
-                "applied": type_multiplier != 1.0,
-                "multiplier": type_multiplier,
-                "source": "verify.py typechart",
-                "receipt": type_receipt.get("display", ""),
-            },
+            "stab": stab_breakdown,
+            "type": {"applied": type_multiplier != 1.0, "multiplier": type_multiplier, "source": "verify.py typechart", "receipt": type_receipt.get("display", "")},
             "weather": weather_breakdown,
-            "spread": {
-                "applied": spread_mod != 1.0,
-                "multiplier": spread_mod,
-                "source": "LOCAL_DAMAGE_ENGINE_SPREAD_RULE" if spread_mod != 1.0 else "NOT_APPLIED",
-            },
-            "screen": {
-                "applied": screen_mod != 1.0,
-                "multiplier": screen_mod,
-                "source": "EXPLICIT_SCENARIO_SCREEN_MODIFIER" if screen_mod != 1.0 else "NOT_APPLIED",
-            },
-            "burn": {
-                "applied": burn_mod != 1.0,
-                "multiplier": burn_mod,
-                "source": "EXPLICIT_SCENARIO_BURN_FLAG" if burn_mod != 1.0 else "NOT_APPLIED",
-                "rule": "Burn modifier claims in public prose still need a status/mechanic receipt.",
-            },
-            "item": item_breakdown,
-            "ability": {
-                "applied": False,
-                "multiplier": 1.0,
-                "source": "NO_ABILITY_DAMAGE_MECHANIC_RECEIPT",
-                "rule": "Adaptability, Supreme Overlord, weather abilities, and similar ability multipliers are not inferred unless a mechanic/damage receipt explicitly implements them.",
-            },
-            "extra": {
-                "applied": explicit_mod != 1.0,
-                "multiplier": explicit_mod,
-                "source": "EXPLICIT_SCENARIO_EXTRA_MODIFIER" if explicit_mod != 1.0 else "NOT_APPLIED",
-            },
+            "spread": {"applied": spread_mod != 1.0, "multiplier": spread_mod, "source": "LOCAL_DAMAGE_ENGINE_SPREAD_RULE" if spread_mod != 1.0 else "NOT_APPLIED"},
+            "screen": {"applied": screen_mod != 1.0, "multiplier": screen_mod, "source": "EXPLICIT_SCENARIO_SCREEN_MODIFIER" if screen_mod != 1.0 else "NOT_APPLIED"},
+            "burn": {"applied": burn_mod != 1.0, "multiplier": burn_mod, "source": "EXPLICIT_SCENARIO_BURN_FLAG" if burn_mod != 1.0 else "NOT_APPLIED", "rule": "Burn modifier claims in public prose still need a status/mechanic receipt."},
+            "item": attacker_item_breakdown,
+            "defender_item": defender_item_breakdown,
+            "ability": ability_breakdown,
+            "helping_hand": helping_hand_breakdown,
+            "extra": {"applied": explicit_mod != 1.0, "multiplier": explicit_mod, "source": "EXPLICIT_SCENARIO_EXTRA_MODIFIER" if explicit_mod != 1.0 else "NOT_APPLIED"},
         },
         "damage_input_provenance": {
             "attacker_spread_source": attacker.get("spread_source") or attacker.get("source_label") or "UNLABELED_INPUT",
@@ -2653,16 +3022,18 @@ def verify_damage(scenario: dict) -> dict:
             "rule": "A numeric damage calc can be correct while its input spread is LOCAL_FALLBACK/EXPERIMENTAL. Do not call damage a meta benchmark unless input provenance is META_SPREAD_DIRECT/TOURNAMENT_LIST_DIRECT/USER_PROVIDED.",
         },
         "item_notes": item_notes,
+        "missing_relevant_modifiers": missing,
+        "damage_completeness": damage_completeness,
+        "public_ko_claim_allowed": public_ko_allowed,
         "damage_rolls": rolls,
         "damage_percent": [round(min_pct, 1), round(max_pct, 1)],
         "defender_hp": hp,
         "ohko_rolls": ohko_count,
         "ko_result": ko_result,
-        "source": "verify.py damage + local 01/05-07/08/typechart + 09 damage formula",
-        "rule": "No damage receipt = no KO/survival claim. This receipt uses 16 rolls from 85 to 100 and exposes STAB/type/weather/item/ability modifier sources; hidden multipliers are not public-safe.",
+        "source": "verify.py damage + local 01/05-07/08/typechart + data/10_structured_mechanic_receipts.jsonl + 09 damage formula",
+        "rule": "v29.42: complete public KO/survival claims require complete structured modifier coverage. Partial receipts are lower-bound/incomplete and must not be used for guaranteed KO language.",
     })
     return out
-
 
 def verify_sequence(scenario: dict) -> dict:
     """Stateful repeated-hit sequence receipt for on-hit effects such as Stamina.
@@ -4848,7 +5219,7 @@ def _mechanic_overinterpret_guard(answer_text: str, receipt: dict):
 
 
 
-# v29.40 receipt-strict / no-mainline-mechanic gate.
+# v29.42 receipt-strict / no-mainline-mechanic gate.
 # These patterns catch exact mechanics/multipliers/stages that models often import
 # from mainline Pokémon. Entity existence is not enough; exact claims need local
 # mechanic/priority/damage receipts.
@@ -4878,6 +5249,8 @@ STRICT_MAINLINE_MECHANIC_PATTERNS = [
 
 
 def _has_matching_exact_mechanic_receipt(receipt: dict, line: str) -> bool:
+    if _line_has_matching_structured_mechanic(receipt or {}, line or ""):
+        return True
     verified = _collect_verified_entities_from_receipt(receipt or {})
     line_norm = normalize_id(line or "")
     # Exact mechanic receipt must match the public line's entity. An unrelated
@@ -4917,6 +5290,47 @@ def _collect_damage_receipts(obj):
     walk(obj)
     return out
 
+def _collect_structured_mechanic_receipt_ids(obj):
+    ids = set()
+    def walk(x):
+        if isinstance(x, dict):
+            rid = x.get("receipt_id")
+            if isinstance(rid, str) and rid.startswith("MECH_"):
+                ids.add(normalize_id(rid))
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+    walk(obj)
+    return ids
+
+
+def _line_has_matching_structured_mechanic(receipt: dict, line: str) -> bool:
+    line_norm = normalize_id(line or "")
+    if not line_norm:
+        return False
+    ids = _collect_structured_mechanic_receipt_ids(receipt or {})
+    if not ids:
+        return False
+    # Direct entity tokens. This avoids letting an unrelated damage receipt authorize
+    # a different exact mechanic claim.
+    candidates = [
+        "lifeorb", "choicescarf", "expertbelt", "adaptability", "weatherball", "lastrespects",
+        "ragefist", "helpinghand", "technician", "toughclaws", "solarpower", "analytic",
+        "blaze", "torrent", "overgrow", "swarm", "sun", "rain", "drought", "drizzle",
+        "focussash", "chopleberry", "shucaberry", "occaberry", "passhoberry", "yacheberry",
+    ]
+    for token in candidates:
+        if token in line_norm and any(token in rid for rid in ids):
+            return True
+    # Weather prose may mention Fire/Water boost without spelling receipt id token exactly.
+    if ("fire" in line_norm or "water" in line_norm or "ไฟ" in line_norm or "น้ำ" in line_norm) and ("sun" in line_norm or "rain" in line_norm or "แดด" in line_norm or "ฝน" in line_norm):
+        if any("fieldsun" in rid or "fieldrain" in rid for rid in ids):
+            return True
+    return False
+
+
 
 def _damage_receipt_integrity_guard(answer_text: str, receipt: dict):
     failures = []
@@ -4934,6 +5348,15 @@ def _damage_receipt_integrity_guard(answer_text: str, receipt: dict):
         for key, val in (mb or {}).items():
             if isinstance(val, dict) and val.get("applied") and re.search(r"UNVERIFIED|NO_.*RECEIPT|NOT_APPLIED|MEMORY", str(val.get("source", "")), re.I):
                 failures.append({"code": "FAIL_DAMAGE_USED_UNVERIFIED_MECHANIC_MODIFIER", "receipt_index": idx, "modifier": key, "source": val.get("source"), "detail": "Applied damage modifier must be backed by a local damage/mechanic receipt."})
+        claim_text = answer_text or ""
+        if dmg.get("damage_completeness") != "complete" or dmg.get("public_ko_claim_allowed") is False:
+            if re.search(r"(?i)(OHKO|2HKO|KO chance|guaranteed|survives?|live\b|tank|avoid\s+KO|การันตี|รอด|ทน|ไม่ตาย|ตายทุก)", claim_text):
+                failures.append({"code": "FAIL_KO_CLAIM_FROM_PARTIAL_DAMAGE_RECEIPT", "receipt_index": idx, "damage_completeness": dmg.get("damage_completeness"), "missing_relevant_modifiers": dmg.get("missing_relevant_modifiers", []), "detail": "v29.42 public KO/survival claims require damage_completeness=complete and public_ko_claim_allowed=true."})
+        ko = str(dmg.get("ko_result", ""))
+        if re.search(r"(?i)(guaranteed\s+OHKO|OHKO.*(?:16/16|guaranteed|การันตี)|ตายทุก|ลบได้แน่|การันตี.*(?:ตาย|OHKO))", claim_text) and ko != "GUARANTEED_OHKO":
+            failures.append({"code": "FAIL_KO_CLAIM_CONTRADICTS_DAMAGE_RECEIPT", "receipt_index": idx, "ko_result": ko, "detail": "Public guaranteed-OHKO wording contradicts the damage receipt."})
+        if re.search(r"(?i)(survives?|รอด|ไม่ตาย|ทน)", claim_text) and ko == "GUARANTEED_OHKO":
+            failures.append({"code": "FAIL_SURVIVAL_CLAIM_CONTRADICTS_DAMAGE_RECEIPT", "receipt_index": idx, "ko_result": ko, "detail": "Public survival wording contradicts a guaranteed-OHKO damage receipt."})
         prov = dmg.get("damage_input_provenance", {}) or {}
         if re.search(r"(?i)(meta benchmark|meta damage|standard benchmark|benchmark จริง|เมต้า.*benchmark|สายมาตรฐาน)", answer_text or ""):
             labels = {str(prov.get("attacker_spread_source", "")), str(prov.get("defender_spread_source", ""))}
@@ -5081,9 +5504,13 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
             has_damage = bool(receipt.get("damage_receipts"))
         if not has_damage:
             failures.append({"code": "FAIL_SURVIVAL_CLAIM_WITHOUT_DAMAGE_RECEIPT", "detail": "Concrete KO/survival/tanking/damage claims require verify.py damage/sequence receipt before final output."})
+        else:
+            partial = [d for d in _collect_damage_receipts(receipt or {}) if d.get("damage_completeness") != "complete" or d.get("public_ko_claim_allowed") is False]
+            if partial:
+                failures.append({"code": "FAIL_SURVIVAL_CLAIM_FROM_PARTIAL_DAMAGE_RECEIPT", "detail": "v29.42 concrete KO/survival wording requires complete damage receipts; partial/lower-bound receipts are not enough.", "partial_count": len(partial)})
     if re.search(r"(?i)(Drizzle|ฝน|rain|Weather\s+Ball|Hurricane|Sand\s+Rush|Swift\s+Swim|Chlorophyll|Slush\s+Rush).*(boost|accuracy|power|แรง|แม่น|ตั้ง|เปลี่ยน|คูณ|x2|×2|เร็ว)", answer_text):
         verified = _collect_verified_entities_from_receipt(receipt or {})
-        has_mech = bool(verified.get("interaction") or verified.get("boardscan") or verified.get("mechanic"))
+        has_mech = bool(verified.get("interaction") or verified.get("boardscan") or verified.get("mechanic") or _collect_structured_mechanic_receipt_ids(receipt or {}))
         if not has_mech:
             failures.append({"code": "FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT", "detail": "Weather/field/move interaction claims require local mechanic, interaction, boardscan, or typepassive receipt."})
     speed_mode_claim = re.search(r"Tailwind|Trick\s*Room|speed\s*mode|dual\s*mode|เปิด\s*Tailwind|เปิด\s*Trick\s*Room|เจอทีม(?:เร็ว|ช้า|ถึก)|ทีม(?:เร็ว|ช้า|ถึก)|ตัวใหญ่", answer_text, re.I)
@@ -5137,7 +5564,7 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
         "failures": failures,
         "warnings": warnings,
         "typechart_receipts_found": [r.get("display") for r in _collect_typechart_receipts(receipt)],
-        "rule": "Final public output must match verifier/render fields. No local receipt = no named entity. No meta/player baseline receipt = no actionable final recommendation. No typechart receipt = no type claim. No typepassive receipt = no type passive/status/weather/hazard claim. No boardscan/interaction/mechanic/counterroute receipt = no mechanic, ally-damage, or hard-counter claim. Run selfaudit/lint before final. lint pass is not semantic verification; item/risk/stat/mechanic prose also needs threataudit, stat, mechanic, and itemthreatfit receipts. v29.40 strict mode: exact mechanics/multipliers/stages/turn counts must be receipt-backed or removed.",
+        "rule": "Final public output must match verifier/render fields. No local receipt = no named entity. No meta/player baseline receipt = no actionable final recommendation. No typechart receipt = no type claim. No typepassive receipt = no type passive/status/weather/hazard claim. No boardscan/interaction/mechanic/counterroute receipt = no mechanic, ally-damage, or hard-counter claim. Run selfaudit/lint before final. lint pass is not semantic verification; item/risk/stat/mechanic prose also needs threataudit, stat, mechanic, and itemthreatfit receipts. v29.42 strict mode: exact mechanics/multipliers/stages/turn counts must be receipt-backed by verifier/mechanic data or removed.",
     }
 
 
@@ -5656,8 +6083,28 @@ def _main():
                     except Exception:
                         state_object = {"active_form": state_raw}
             result = verify_stat(sys.argv[2], sys.argv[3], spread_object, state_object)
+        elif cmd == "mechanic-data-lint":
+            result = verify_mechanic_data_lint()
+        elif cmd == "mechanic-coverage":
+            result = verify_mechanic_coverage()
+        elif cmd == "mechanic-effect":
+            context = ""
+            args = sys.argv[2:]
+            if "--context" in args:
+                i = args.index("--context")
+                if i + 1 < len(args):
+                    context = args[i + 1]
+                    del args[i:i+2]
+            result = verify_mechanic_effect(" ".join(args), context=context)
         elif cmd == "damage":
-            scenario = _load_json_arg(sys.argv[2])
+            args = sys.argv[2:]
+            require_complete = False
+            if "--require-complete-modifiers" in args:
+                require_complete = True
+                args = [a for a in args if a != "--require-complete-modifiers"]
+            scenario = _load_json_arg(args[0])
+            if require_complete:
+                scenario["require_complete_modifiers"] = True
             result = verify_damage(scenario)
         elif cmd == "sequence":
             scenario = _load_json_arg(sys.argv[2])

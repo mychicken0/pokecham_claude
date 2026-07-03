@@ -1,4 +1,4 @@
-# 00 — PokeCham Main Contract v29.40
+# 00 — PokeCham Main Contract v29.42
 
 This is the main contract. Other reference files own specialized details and should be cited by role, not duplicated.
 
@@ -269,3 +269,25 @@ Public set/card output must show nature effects copied from verifier receipts, e
 
 Use `spread` or `investment` for Champions 0-32/66 allocation. Bare `EVs` wording is a warning; `252 EV` or `IV` notation remains a failure.
 
+
+
+## 19. v29.42 structured mechanics and complete damage gate
+
+v29.42 keeps receipt-strict but adds structured mechanic data instead of relaxing strictness. Exact item/ability/weather/move-dynamic damage claims must come from `data/10_structured_mechanic_receipts.jsonl`; the verifier must not parse descriptive prose into numbers.
+
+Before public OHKO/2HKO/survival claims, use:
+
+```bash
+python3 scripts/verify.py damage <scenario.json> --require-complete-modifiers
+```
+
+Public KO/survival language is allowed only when the receipt has `damage_completeness=complete` and `public_ko_claim_allowed=true`. If a receipt is partial, describe it only as partial/lower-bound.
+
+Mechanic data must stay current-DB-only:
+
+```bash
+python3 scripts/verify.py mechanic-data-lint
+python3 scripts/verify.py mechanic-coverage
+```
+
+Do not add or recommend a move/item/ability absent from current local DB. In this pack, `Choice Band`, `Choice Specs`, `Clear Amulet`, and `Assault Vest` are absent items and remain blocked.
