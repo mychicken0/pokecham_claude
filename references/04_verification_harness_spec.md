@@ -1,4 +1,4 @@
-# 04 — Verification Harness Spec v29.44
+# 04 — Verification Harness Spec v29.45
 
 This file owns `scripts/verify.py` commands, receipts, lint/selfaudit, and fail/warning code groups.
 
@@ -466,3 +466,54 @@ FAIL_MATRIX_RECEIPT_MISSING_DIRECTION
 ```
 
 These gates prevent public prose from choosing switch-ins or presenting type tables without explicit direction and `taken`/`dealt` cell semantics.
+
+
+## v29.45 readable battle report commands
+
+### battle-report-template
+
+```bash
+python3 scripts/verify.py battle-report-template --style standard
+```
+
+Returns the required sections for readable battle-log analysis. Styles: `compact`, `standard`, `deep`.
+
+### battle-report-render
+
+```bash
+python3 scripts/verify.py battle-report-render report.json --style standard
+```
+
+Renders a structured report JSON into Markdown. This renderer does not parse raw battle logs or invent mechanics; it only formats supplied structured facts.
+
+### battle-report-lint
+
+```bash
+python3 scripts/verify.py battle-report-lint answer.md receipt.json --style standard
+```
+
+Checks battle report readability and receipt discipline:
+
+- verdict/winner/main reason appears early;
+- key mistakes and turn references are present;
+- switch/swap advice has `SWITCH_SAFETY_MATRIX` or `INCOMING_DEFENSE_MATRIX`;
+- type/switch tables include a direction line and `taken`/`dealt` semantics;
+- raw receipt JSON is not dumped in public output;
+- scores include nearby reasons;
+- OHKO/2HKO/guaranteed/survival claims require complete damage receipts.
+
+Observed damage percentages from the battle log may be quoted as observed/log damage. They are not damage-calc receipts and must not be upgraded into guaranteed KO/survival claims without `damage_completeness=complete`.
+
+New report lint failures:
+
+```text
+FAIL_BATTLE_REPORT_MISSING_VERDICT
+FAIL_BATTLE_REPORT_MISSING_KEY_MISTAKES
+FAIL_BATTLE_REPORT_MISSING_TURN_REFERENCES
+FAIL_BATTLE_REPORT_DUMPS_RAW_RECEIPT_JSON
+FAIL_BATTLE_REPORT_SWITCH_ADVICE_WITHOUT_MATRIX
+FAIL_BATTLE_REPORT_TYPE_TABLE_MISSING_DIRECTION
+FAIL_BATTLE_REPORT_TOO_LONG_FOR_STYLE
+FAIL_BATTLE_REPORT_SCORE_WITHOUT_REASON
+FAIL_BATTLE_REPORT_DAMAGE_CLAIM_WITHOUT_COMPLETE_DAMAGE_RECEIPT
+```

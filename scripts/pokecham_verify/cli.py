@@ -11,6 +11,8 @@ import sys
 
 from . import legacy
 from .regression import run_all_regression_tests
+from .report_engine import battle_report_template, render_battle_report
+from .report_lint import battle_report_lint
 from .switch_matrix import verify_switch_safety_matrix
 from .type_matrix import verify_incoming_defense_matrix, verify_outgoing_attack_matrix, verify_type_matrix
 
@@ -78,6 +80,42 @@ def main() -> None:
                 result = {"status": "fail", "reason": "switch-safety-matrix requires board JSON/path"}
             else:
                 result = verify_switch_safety_matrix(_load_json_arg(sys.argv[2]))
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return
+        if cmd == "battle-report-template":
+            style = "standard"
+            if "--style" in sys.argv:
+                i = sys.argv.index("--style")
+                if i + 1 < len(sys.argv):
+                    style = sys.argv[i + 1]
+            result = battle_report_template(style=style)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return
+        if cmd == "battle-report-render":
+            if len(sys.argv) < 3:
+                print("# Battle Report\n\nInvalid report payload: missing report JSON/path.")
+                return
+            style = "standard"
+            if "--style" in sys.argv:
+                i = sys.argv.index("--style")
+                if i + 1 < len(sys.argv):
+                    style = sys.argv[i + 1]
+            payload = _load_json_arg(sys.argv[2])
+            print(render_battle_report(payload, style=style), end="")
+            return
+        if cmd == "battle-report-lint":
+            if len(sys.argv) < 4:
+                result = {"status": "fail", "reason": "battle-report-lint requires answer.md and receipt.json"}
+            else:
+                style = "standard"
+                if "--style" in sys.argv:
+                    i = sys.argv.index("--style")
+                    if i + 1 < len(sys.argv):
+                        style = sys.argv[i + 1]
+                with open(sys.argv[2], "r", encoding="utf-8") as f:
+                    answer_text = f.read()
+                receipt = _load_json_arg(sys.argv[3])
+                result = battle_report_lint(answer_text, receipt, style=style)
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return
         if cmd == "all-regression-tests":

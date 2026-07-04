@@ -1,0 +1,7 @@
+{
+  "match": "VgcP1_1001 vs VgcP2_1001",
+  "style": "standard",
+  "focus": ["mistakes", "switches", "turning_points"],
+  "required_receipts": ["SWITCH_SAFETY_MATRIX"],
+  "notes": "Regression fixture for readable report output. Raw log omitted from lint fixture; user-provided battle had P2 switch Charizard to Sylveon on Turn 1."
+}

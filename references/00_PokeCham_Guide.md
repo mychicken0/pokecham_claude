@@ -1,4 +1,4 @@
-# 00 — PokeCham Main Contract v29.44
+# 00 — PokeCham Main Contract v29.45
 
 This is the main contract. Other reference files own specialized details and should be cited by role, not duplicated.
 
@@ -93,7 +93,21 @@ Do not use ambiguous “attack table” / “def table” wording in final recei
 Switch advice must cite the row used, e.g. `Garchomp: Fire = 0.5x taken, Rock = 0.5x taken, Electric = 0x taken`.
 
 
-## 6.2 Receipt-strict rule
+## 6.2 Battle report output rule
+
+Battle-log analysis must be readable and evidence-gated. Use verdict-first output:
+
+1. verdict / winner / main reason;
+2. key mistakes and turning points with turn references;
+3. direction-explicit switch/type matrix only when it helps the reader;
+4. team/build issues when a team sheet is supplied;
+5. score only with reasons;
+6. final summary.
+
+Do not dump raw receipt JSON in public reports. Summarize verified rows instead. Observed damage percentages from a battle log may be quoted as observed/log damage, but OHKO/2HKO/guaranteed survival claims still require complete damage receipts.
+
+
+## 6.3 Receipt-strict rule
 
 A local entity receipt proves only that the name exists. It does not prove exact mechanics.
 

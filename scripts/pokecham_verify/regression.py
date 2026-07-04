@@ -5,6 +5,7 @@ from pathlib import Path
 
 from . import legacy
 from .switch_matrix import verify_switch_safety_matrix
+from .report_lint import battle_report_lint
 from .type_matrix import verify_incoming_defense_matrix
 
 
@@ -111,10 +112,39 @@ def run_all_regression_tests() -> dict:
     checks.append({"name": "lint-switch-without-matrix", "receipt": bad_lint})
     checks.append({"name": "lint-switch-with-matrix", "receipt": good_lint})
 
+
+
+    # v29.45 readable battle report output lint regressions.
+    good_report = _fixture_path("tests", "fixtures", "reports", "report_good_standard.md")
+    bad_no_matrix = _fixture_path("tests", "fixtures", "reports", "report_bad_switch_no_matrix.md")
+    bad_ambiguous = _fixture_path("tests", "fixtures", "reports", "report_bad_ambiguous_table.md")
+    bad_receipt_dump = _fixture_path("tests", "fixtures", "reports", "report_bad_too_verbose_receipt_dump.md")
+    good_receipt = _fixture_path("tests", "receipts", "receipt_battle_report_charizard_weatherball.json")
+    empty = _fixture_path("tests", "receipts", "receipt_empty.json")
+    report_good_lint = battle_report_lint(good_report.read_text(), legacy._load_json_arg(str(good_receipt)), style="standard")
+    report_bad_no_matrix = battle_report_lint(bad_no_matrix.read_text(), legacy._load_json_arg(str(empty)), style="standard")
+    report_bad_ambiguous = battle_report_lint(bad_ambiguous.read_text(), legacy._load_json_arg(str(good_receipt)), style="standard")
+    report_bad_dump = battle_report_lint(bad_receipt_dump.read_text(), legacy._load_json_arg(str(good_receipt)), style="standard")
+    if report_good_lint.get("status") != "pass":
+        failures.append({"name": "battle-report-good-standard", "expected": "pass", "actual": report_good_lint.get("status"), "receipt": report_good_lint})
+    bad_no_matrix_codes = {f.get("code") for f in report_bad_no_matrix.get("failures", [])}
+    if "FAIL_BATTLE_REPORT_SWITCH_ADVICE_WITHOUT_MATRIX" not in bad_no_matrix_codes:
+        failures.append({"name": "battle-report-bad-switch-no-matrix", "expected_code": "FAIL_BATTLE_REPORT_SWITCH_ADVICE_WITHOUT_MATRIX", "receipt": report_bad_no_matrix})
+    bad_ambiguous_codes = {f.get("code") for f in report_bad_ambiguous.get("failures", [])}
+    if "FAIL_BATTLE_REPORT_TYPE_TABLE_MISSING_DIRECTION" not in bad_ambiguous_codes:
+        failures.append({"name": "battle-report-bad-ambiguous-table", "expected_code": "FAIL_BATTLE_REPORT_TYPE_TABLE_MISSING_DIRECTION", "receipt": report_bad_ambiguous})
+    bad_dump_codes = {f.get("code") for f in report_bad_dump.get("failures", [])}
+    if "FAIL_BATTLE_REPORT_DUMPS_RAW_RECEIPT_JSON" not in bad_dump_codes:
+        failures.append({"name": "battle-report-bad-receipt-dump", "expected_code": "FAIL_BATTLE_REPORT_DUMPS_RAW_RECEIPT_JSON", "receipt": report_bad_dump})
+    checks.append({"name": "battle-report-good-standard", "receipt": report_good_lint})
+    checks.append({"name": "battle-report-bad-switch-no-matrix", "receipt": report_bad_no_matrix})
+    checks.append({"name": "battle-report-bad-ambiguous-table", "receipt": report_bad_ambiguous})
+    checks.append({"name": "battle-report-bad-receipt-dump", "receipt": report_bad_dump})
+
     return {
         "mode": "all_regression_tests",
         "status": "pass" if not failures else "fail",
         "checks": checks,
         "failures": failures,
-        "rule": "Run before and after verifier refactors. v29.44 preserves CLI compatibility and adds direction-explicit incoming/outgoing/switch matrix gates.",
+        "rule": "Run before and after verifier refactors. v29.45 preserves CLI compatibility, v29.44 action matrices, and adds readable battle report output lint gates.",
     }

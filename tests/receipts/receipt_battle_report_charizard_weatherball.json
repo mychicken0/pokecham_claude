@@ -1,0 +1,702 @@
+{
+  "mode": "switch_safety_matrix",
+  "engine_version": "v29.44-action-matrix-switchgate",
+  "matrix_kind": "SWITCH_SAFETY_MATRIX",
+  "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+  "public_table_header_required": "ENEMY LIKELY MOVE → OUR SWITCH-IN",
+  "cell_semantics": "x taken",
+  "status": "pass",
+  "public_switch_recommendation_allowed": true,
+  "rows": {
+    "Sylveon": {
+      "incoming_moves": {
+        "Charizard-Mega-Y / Weather Ball [Fire]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Fire → Fairy = 1x neutral",
+          "multiplier": 1.0,
+          "multiplier_display": "1x",
+          "label": "neutral",
+          "attacking_type": "Fire",
+          "defender_types": [
+            "Fairy"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "1x taken"
+        },
+        "Tyranitar / Rock Slide [Rock]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Rock → Fairy = 1x neutral",
+          "multiplier": 1.0,
+          "multiplier_display": "1x",
+          "label": "neutral",
+          "attacking_type": "Rock",
+          "defender_types": [
+            "Fairy"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "1x taken"
+        },
+        "Charizard-Mega-Y / Thunderbolt [Electric]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Electric → Fairy = 1x neutral",
+          "multiplier": 1.0,
+          "multiplier_display": "1x",
+          "label": "neutral",
+          "attacking_type": "Electric",
+          "defender_types": [
+            "Fairy"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "1x taken"
+        }
+      },
+      "verdict": "usable_no_super_effective_taken"
+    },
+    "Kingambit": {
+      "incoming_moves": {
+        "Charizard-Mega-Y / Weather Ball [Fire]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Fire → Dark/Steel = 2x super_effective",
+          "multiplier": 2.0,
+          "multiplier_display": "2x",
+          "label": "super_effective",
+          "attacking_type": "Fire",
+          "defender_types": [
+            "Dark",
+            "Steel"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "2x taken"
+        },
+        "Tyranitar / Rock Slide [Rock]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Rock → Dark/Steel = 0.5x resisted",
+          "multiplier": 0.5,
+          "multiplier_display": "0.5x",
+          "label": "resisted",
+          "attacking_type": "Rock",
+          "defender_types": [
+            "Dark",
+            "Steel"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "0.5x taken"
+        },
+        "Charizard-Mega-Y / Thunderbolt [Electric]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Electric → Dark/Steel = 1x neutral",
+          "multiplier": 1.0,
+          "multiplier_display": "1x",
+          "label": "neutral",
+          "attacking_type": "Electric",
+          "defender_types": [
+            "Dark",
+            "Steel"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "1x taken"
+        }
+      },
+      "verdict": "bad_into_at_least_one_likely_move"
+    },
+    "Whimsicott": {
+      "incoming_moves": {
+        "Charizard-Mega-Y / Weather Ball [Fire]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Fire → Grass/Fairy = 2x super_effective",
+          "multiplier": 2.0,
+          "multiplier_display": "2x",
+          "label": "super_effective",
+          "attacking_type": "Fire",
+          "defender_types": [
+            "Grass",
+            "Fairy"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "2x taken"
+        },
+        "Tyranitar / Rock Slide [Rock]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Rock → Grass/Fairy = 1x neutral",
+          "multiplier": 1.0,
+          "multiplier_display": "1x",
+          "label": "neutral",
+          "attacking_type": "Rock",
+          "defender_types": [
+            "Grass",
+            "Fairy"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "1x taken"
+        },
+        "Charizard-Mega-Y / Thunderbolt [Electric]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Electric → Grass/Fairy = 0.5x resisted",
+          "multiplier": 0.5,
+          "multiplier_display": "0.5x",
+          "label": "resisted",
+          "attacking_type": "Electric",
+          "defender_types": [
+            "Grass",
+            "Fairy"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "0.5x taken"
+        }
+      },
+      "verdict": "bad_into_at_least_one_likely_move"
+    },
+    "Dragonite": {
+      "incoming_moves": {
+        "Charizard-Mega-Y / Weather Ball [Fire]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Fire → Dragon/Flying = 0.5x resisted",
+          "multiplier": 0.5,
+          "multiplier_display": "0.5x",
+          "label": "resisted",
+          "attacking_type": "Fire",
+          "defender_types": [
+            "Dragon",
+            "Flying"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "0.5x taken"
+        },
+        "Tyranitar / Rock Slide [Rock]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Rock → Dragon/Flying = 2x super_effective",
+          "multiplier": 2.0,
+          "multiplier_display": "2x",
+          "label": "super_effective",
+          "attacking_type": "Rock",
+          "defender_types": [
+            "Dragon",
+            "Flying"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "2x taken"
+        },
+        "Charizard-Mega-Y / Thunderbolt [Electric]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Electric → Dragon/Flying = 1x neutral",
+          "multiplier": 1.0,
+          "multiplier_display": "1x",
+          "label": "neutral",
+          "attacking_type": "Electric",
+          "defender_types": [
+            "Dragon",
+            "Flying"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "1x taken"
+        }
+      },
+      "verdict": "bad_into_at_least_one_likely_move"
+    },
+    "Garchomp": {
+      "incoming_moves": {
+        "Charizard-Mega-Y / Weather Ball [Fire]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Fire → Dragon/Ground = 0.5x resisted",
+          "multiplier": 0.5,
+          "multiplier_display": "0.5x",
+          "label": "resisted",
+          "attacking_type": "Fire",
+          "defender_types": [
+            "Dragon",
+            "Ground"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "0.5x taken"
+        },
+        "Tyranitar / Rock Slide [Rock]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Rock → Dragon/Ground = 0.5x resisted",
+          "multiplier": 0.5,
+          "multiplier_display": "0.5x",
+          "label": "resisted",
+          "attacking_type": "Rock",
+          "defender_types": [
+            "Dragon",
+            "Ground"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "0.5x taken"
+        },
+        "Charizard-Mega-Y / Thunderbolt [Electric]": {
+          "entity": "type_effectiveness",
+          "status": "pass",
+          "display": "Electric → Dragon/Ground = 0x immune",
+          "multiplier": 0.0,
+          "multiplier_display": "0x",
+          "label": "immune",
+          "attacking_type": "Electric",
+          "defender_types": [
+            "Dragon",
+            "Ground"
+          ],
+          "source": "01 defender typing + bundled type chart in 09",
+          "cell_semantics": "damage_multiplier_taken_by_defender",
+          "public_cell_suffix": "taken",
+          "value_display": "0x taken"
+        }
+      },
+      "verdict": "strong_defensive_switch_in"
+    }
+  },
+  "resolved_incoming_moves": [
+    {
+      "label": "Charizard-Mega-Y / Weather Ball [Fire]",
+      "move": {
+        "user": "Charizard-Mega-Y",
+        "move": "Weather Ball",
+        "resolved_type": "Fire",
+        "context": "sun"
+      },
+      "resolved_type": "Fire",
+      "resolution_receipt": {
+        "status": "pass",
+        "source": "resolved_type",
+        "type": "Fire",
+        "rule": "Switch-safety uses resolved incoming move type supplied by board receipt."
+      }
+    },
+    {
+      "label": "Tyranitar / Rock Slide [Rock]",
+      "move": {
+        "user": "Tyranitar",
+        "move": "Rock Slide",
+        "resolved_type": "Rock"
+      },
+      "resolved_type": "Rock",
+      "resolution_receipt": {
+        "status": "pass",
+        "source": "resolved_type",
+        "type": "Rock",
+        "rule": "Switch-safety uses resolved incoming move type supplied by board receipt."
+      }
+    },
+    {
+      "label": "Charizard-Mega-Y / Thunderbolt [Electric]",
+      "move": {
+        "user": "Charizard-Mega-Y",
+        "move": "Thunderbolt",
+        "resolved_type": "Electric"
+      },
+      "resolved_type": "Electric",
+      "resolution_receipt": {
+        "status": "pass",
+        "source": "resolved_type",
+        "type": "Electric",
+        "rule": "Switch-safety uses resolved incoming move type supplied by board receipt."
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Weather Ball [Fire]",
+      "enemy_move_type": "Fire",
+      "our_switch_in": "Sylveon",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fire → Fairy = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Fire",
+        "defender_types": [
+          "Fairy"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Tyranitar / Rock Slide [Rock]",
+      "enemy_move_type": "Rock",
+      "our_switch_in": "Sylveon",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Rock → Fairy = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Rock",
+        "defender_types": [
+          "Fairy"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Thunderbolt [Electric]",
+      "enemy_move_type": "Electric",
+      "our_switch_in": "Sylveon",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Electric → Fairy = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Electric",
+        "defender_types": [
+          "Fairy"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Weather Ball [Fire]",
+      "enemy_move_type": "Fire",
+      "our_switch_in": "Kingambit",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fire → Dark/Steel = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Fire",
+        "defender_types": [
+          "Dark",
+          "Steel"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Tyranitar / Rock Slide [Rock]",
+      "enemy_move_type": "Rock",
+      "our_switch_in": "Kingambit",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Rock → Dark/Steel = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Rock",
+        "defender_types": [
+          "Dark",
+          "Steel"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Thunderbolt [Electric]",
+      "enemy_move_type": "Electric",
+      "our_switch_in": "Kingambit",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Electric → Dark/Steel = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Electric",
+        "defender_types": [
+          "Dark",
+          "Steel"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Weather Ball [Fire]",
+      "enemy_move_type": "Fire",
+      "our_switch_in": "Whimsicott",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fire → Grass/Fairy = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Fire",
+        "defender_types": [
+          "Grass",
+          "Fairy"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Tyranitar / Rock Slide [Rock]",
+      "enemy_move_type": "Rock",
+      "our_switch_in": "Whimsicott",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Rock → Grass/Fairy = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Rock",
+        "defender_types": [
+          "Grass",
+          "Fairy"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Thunderbolt [Electric]",
+      "enemy_move_type": "Electric",
+      "our_switch_in": "Whimsicott",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Electric → Grass/Fairy = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Electric",
+        "defender_types": [
+          "Grass",
+          "Fairy"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Weather Ball [Fire]",
+      "enemy_move_type": "Fire",
+      "our_switch_in": "Dragonite",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fire → Dragon/Flying = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Fire",
+        "defender_types": [
+          "Dragon",
+          "Flying"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Tyranitar / Rock Slide [Rock]",
+      "enemy_move_type": "Rock",
+      "our_switch_in": "Dragonite",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Rock → Dragon/Flying = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Rock",
+        "defender_types": [
+          "Dragon",
+          "Flying"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Thunderbolt [Electric]",
+      "enemy_move_type": "Electric",
+      "our_switch_in": "Dragonite",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Electric → Dragon/Flying = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Electric",
+        "defender_types": [
+          "Dragon",
+          "Flying"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Weather Ball [Fire]",
+      "enemy_move_type": "Fire",
+      "our_switch_in": "Garchomp",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fire → Dragon/Ground = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Fire",
+        "defender_types": [
+          "Dragon",
+          "Ground"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Tyranitar / Rock Slide [Rock]",
+      "enemy_move_type": "Rock",
+      "our_switch_in": "Garchomp",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Rock → Dragon/Ground = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Rock",
+        "defender_types": [
+          "Dragon",
+          "Ground"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      }
+    },
+    {
+      "matrix_kind": "SWITCH_SAFETY_MATRIX",
+      "direction": "ENEMY_LIKELY_MOVE_TO_OUR_SWITCH_IN",
+      "enemy_likely_move": "Charizard-Mega-Y / Thunderbolt [Electric]",
+      "enemy_move_type": "Electric",
+      "our_switch_in": "Garchomp",
+      "cell": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Electric → Dragon/Ground = 0x immune",
+        "multiplier": 0.0,
+        "multiplier_display": "0x",
+        "label": "immune",
+        "attacking_type": "Electric",
+        "defender_types": [
+          "Dragon",
+          "Ground"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0x taken"
+      }
+    }
+  ],
+  "receipt_counts": {
+    "switch_safety_typechart_receipts": 15
+  },
+  "failures": [],
+  "warnings": [],
+  "rule": "No public swap/switch/pivot/safe-switch recommendation without this receipt or an incoming-defense matrix. Direction is ENEMY LIKELY MOVE → OUR SWITCH-IN; cells must be written as x taken."
+}
