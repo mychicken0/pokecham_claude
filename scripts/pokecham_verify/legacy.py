@@ -3181,8 +3181,9 @@ PROVENANCE_LABELS = {
     "META_PATTERN": "Meta role/core pattern found, but not an exact set receipt for this slot.",
     "META_SPREAD_DIRECT": "Exact Pokémon nature+spread from an approved Champions spread table or usage source.",
     "TOURNAMENT_LIST_DIRECT": "Exact set/spread from a tournament teamlist or replay-backed list.",
-    "LOCAL_TEAM_FIT": "Assistant/team-fit choice after local legality and compatibility verification; not sold as meta-direct.",
-    "LOCAL_BENCHMARK_OVERRIDE": "Changed from meta baseline only after speed/damage benchmark receipt justifies it.",
+    "LOCAL_TEAM_FIT": "Intermediate team-fit choice after local legality and compatibility verification; not final recommendation evidence by itself.",
+    "LOCAL_FALLBACK_AFTER_SEARCH": "Approved live/player data was searched for this Pokémon+slot and unavailable; local-verified fallback only.",
+    "LOCAL_BENCHMARK_OVERRIDE": "Changed from meta baseline only after explicit diff plus speed/damage/mechanic benchmark justifies it.",
     "LOCAL_GUESS": "No meta spread and no benchmark; audit-only unless clearly labelled as uncertain.",
     "ITEM_CLAUSE_REPAIR": "Changed because Item Clause or team item economy required a different verified item.",
     "SPEED_MODE_FIT": "Chosen to fit the team's Tailwind/TR/weather/priority speed plan.",
@@ -3691,7 +3692,7 @@ def evaluate_team_fit(team_receipt: dict) -> dict:
         if spread_label not in HARD_PROVENANCE_LABELS:
             slot["status"] = "fail"
             out["failures"].append({"code": "FAIL_SPREAD_SOURCE_UNLABELED", "pokemon": pokemon_name, "detail": "spread_source/spread_provenance must be one of the approved provenance labels"})
-        if item_label in {"LOCAL_TEAM_FIT", "SPEED_MODE_FIT", "ITEM_CLAUSE_REPAIR", "DAMAGE_BENCHMARK", "EXPERIMENTAL"}:
+        if item_label in {"LOCAL_TEAM_FIT", "LOCAL_FALLBACK_AFTER_SEARCH", "SPEED_MODE_FIT", "ITEM_CLAUSE_REPAIR", "DAMAGE_BENCHMARK", "EXPERIMENTAL"}:
             slot["warnings"].append({"code": "INFO_ITEM_SELECTED_BY_TEAM_FIT", "detail": f"{item_name} is labeled {item_label}, not meta-direct."})
         if dual_speed and item_id == "choicescarf":
             warn = {"code": "WARN_CHOICE_SCARF_CONFLICTS_WITH_DUAL_SPEED_MODE", "pokemon": pokemon_name, "detail": "Dual Tailwind + Trick Room teams should justify Choice Scarf; it may over-commit this slot to fast mode."}

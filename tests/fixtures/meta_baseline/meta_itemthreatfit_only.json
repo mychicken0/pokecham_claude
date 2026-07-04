@@ -1,0 +1,6 @@
+{
+  "format": "pokemon_champions_vgc2026_reg_m_a",
+  "slot_baselines": [
+    {"pokemon":"Dragonite","field":"item","value":"Wacan Berry","baseline_status":"ITEMTHREATFIT","source_family":"local"}
+  ]
+}

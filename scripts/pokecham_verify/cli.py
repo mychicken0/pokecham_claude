@@ -13,6 +13,8 @@ from . import legacy
 from .regression import run_all_regression_tests
 from .report_engine import battle_report_template, render_battle_report
 from .report_lint import battle_report_lint
+from .meta_baseline import meta_baseline_gate, meta_baseline_lint
+from .recommendation_lint import recommendation_provenance_lint
 from .switch_matrix import verify_switch_safety_matrix
 from .type_matrix import verify_incoming_defense_matrix, verify_outgoing_attack_matrix, verify_type_matrix
 
@@ -80,6 +82,35 @@ def main() -> None:
                 result = {"status": "fail", "reason": "switch-safety-matrix requires board JSON/path"}
             else:
                 result = verify_switch_safety_matrix(_load_json_arg(sys.argv[2]))
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return
+
+        if cmd == "meta-baseline-lint":
+            if len(sys.argv) < 3:
+                result = {"status": "fail", "reason": "meta-baseline-lint requires meta_baseline.json"}
+            else:
+                result = meta_baseline_lint(_load_json_arg(sys.argv[2]))
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return
+        if cmd == "meta-baseline-gate":
+            if len(sys.argv) < 4:
+                result = {"status": "fail", "reason": "meta-baseline-gate requires team.json and meta_baseline.json"}
+            else:
+                fields = None
+                if "--fields" in sys.argv:
+                    i = sys.argv.index("--fields")
+                    if i + 1 < len(sys.argv):
+                        fields = [x.strip() for x in sys.argv[i + 1].split(",") if x.strip()]
+                result = meta_baseline_gate(_load_json_arg(sys.argv[2]), _load_json_arg(sys.argv[3]), fields=fields)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return
+        if cmd == "recommendation-provenance-lint":
+            if len(sys.argv) < 4:
+                result = {"status": "fail", "reason": "recommendation-provenance-lint requires answer.md and receipt.json"}
+            else:
+                with open(sys.argv[2], "r", encoding="utf-8") as f:
+                    answer_text = f.read()
+                result = recommendation_provenance_lint(answer_text, _load_json_arg(sys.argv[3]))
             print(json.dumps(result, ensure_ascii=False, indent=2))
             return
         if cmd == "battle-report-template":

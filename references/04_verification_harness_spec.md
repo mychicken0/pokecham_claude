@@ -1,4 +1,4 @@
-# 04 — Verification Harness Spec v29.45
+# 04 — Verification Harness Spec v29.46
 
 This file owns `scripts/verify.py` commands, receipts, lint/selfaudit, and fail/warning code groups.
 
@@ -100,33 +100,48 @@ Required for final team/set answers:
 - Provenance labels present.
 - Team-fit, spreadfit, itemspread, threataudit, and itemthreatfit warnings addressed or surfaced.
 
-## 4. Meta baseline receipts
+## 4. Meta baseline hardgate commands
 
-For actionable advice, a meta/player baseline receipt is required before final recommendation.
+For actionable advice, a per-slot meta/player baseline gate is required before final item/move/spread/nature/ability recommendation.
 
-Receipt fields should include:
+```bash
+python3 scripts/verify.py meta-baseline-lint meta_baseline.json
+python3 scripts/verify.py meta-baseline-gate team.json meta_baseline.json [--fields item,moves,spread,nature,ability]
+python3 scripts/verify.py recommendation-provenance-lint answer.md receipt.json
+```
+
+Eligible final evidence labels:
+
+- `META_DIRECT` / `META_SPREAD_DIRECT` / `TOURNAMENT_LIST_DIRECT` / `USER_REQUESTED` — direct source/user evidence for the exact slot.
+- `LOCAL_FALLBACK_AFTER_SEARCH` — only after a matching approved `search_attempts[]` receipt with `no_results` or `unavailable`.
+- `LOCAL_BENCHMARK_OVERRIDE` — only with `baseline_value`, `final_value`, and explicit diff/benchmark receipt summary.
+
+Blocked as final evidence: `LOCAL_FALLBACK`, `LOCAL_TEAM_FIT`, `ITEM_CLAUSE_REPAIR`, `ITEMTHREATFIT`, `DAMAGE_BENCHMARK`, `SPEED_MODE_FIT`, `LOCAL_GUESS`, and `EXPERIMENTAL`. These may appear only as intermediate audit labels.
+
+Minimal receipt shape:
 
 ```json
 {
-  "source_label": "META_DIRECT | META_SPREAD_DIRECT | TOURNAMENT_LIST_DIRECT | META_PATTERN | LOCAL_FALLBACK",
-  "source_name": "...",
-  "usage": "...",
-  "pokemon": "...",
-  "moves": [],
-  "item": "...",
-  "nature": "...",
-  "spread": {}
+  "search_attempts": [
+    {"pokemon":"Dragonite","field":"item","source_family":"Pikalytics","query":"...","result_status":"found"}
+  ],
+  "slot_baselines": [
+    {"pokemon":"Dragonite","field":"item","value":"White Herb","baseline_status":"META_DIRECT","source_family":"Pikalytics"}
+  ],
+  "overrides": [
+    {"pokemon":"Dragonite","field":"item","baseline_value":"White Herb","final_value":"Wacan Berry","baseline_status":"LOCAL_BENCHMARK_OVERRIDE","diff":"..."}
+  ]
 }
 ```
 
 Fail/warn group:
 
 ```text
-FAIL_ACTIONABLE_BUILD_WITHOUT_META_BASELINE
+FAIL_ACTIONABLE_ITEM_RECOMMENDATION_WITHOUT_META_BASELINE
 FAIL_META_DIRECT_WITHOUT_SOURCE
-FAIL_LOCAL_ONLY_BUILD_PRESENTED_AS_META
-WARN_LOCAL_FALLBACK_NO_PLAYER_EVIDENCE
-WARN_META_SEARCH_REQUIRED_FOR_ACTIONABLE_REQUEST
+FAIL_ITEMTHREATFIT_USED_AS_META_BASELINE
+FAIL_LOCAL_FALLBACK_WITHOUT_SEARCH_ATTEMPT
+FAIL_META_BASELINE_SLOT_MISSING
 ```
 
 ## 5. Item-spread coherence receipts
@@ -231,7 +246,7 @@ FAIL_MOVE_SECONDARY_EFFECT_CLAIM_WITHOUT_RECEIPT
 FAIL_WEATHER_MECHANIC_REASON_WITHOUT_RECEIPT
 FAIL_MANUAL_STAT_FORMULA_USED
 FAIL_META_CLAIM_WITHOUT_LIVE_SOURCE
-FAIL_LOCAL_FALLBACK_LABELED_AS_META
+FAIL_LOCAL_FALLBACK_WITHOUT_SEARCH_ATTEMPT
 FAIL_DAMAGE_MULTIPLIER_HIDDEN
 FAIL_DAMAGE_USED_UNVERIFIED_MECHANIC_MODIFIER
 FAIL_DAMAGE_INPUT_PROVENANCE_MISSING
@@ -388,11 +403,11 @@ WARN_FAST_MON_HURT_BY_TRICK_ROOM
 Meta baseline/actionable:
 
 ```text
-FAIL_ACTIONABLE_BUILD_WITHOUT_META_BASELINE
+FAIL_ACTIONABLE_ITEM_RECOMMENDATION_WITHOUT_META_BASELINE
 FAIL_META_DIRECT_WITHOUT_SOURCE
-FAIL_LOCAL_ONLY_BUILD_PRESENTED_AS_META
-WARN_LOCAL_FALLBACK_NO_PLAYER_EVIDENCE
-WARN_META_SEARCH_REQUIRED_FOR_ACTIONABLE_REQUEST
+FAIL_ITEMTHREATFIT_USED_AS_META_BASELINE
+FAIL_LOCAL_FALLBACK_WITHOUT_SEARCH_ATTEMPT
+FAIL_META_BASELINE_SLOT_MISSING
 ```
 
 
@@ -516,4 +531,20 @@ FAIL_BATTLE_REPORT_TYPE_TABLE_MISSING_DIRECTION
 FAIL_BATTLE_REPORT_TOO_LONG_FOR_STYLE
 FAIL_BATTLE_REPORT_SCORE_WITHOUT_REASON
 FAIL_BATTLE_REPORT_DAMAGE_CLAIM_WITHOUT_COMPLETE_DAMAGE_RECEIPT
+```
+
+
+### v29.46 fail codes
+
+```text
+FAIL_ACTIONABLE_ITEM_RECOMMENDATION_WITHOUT_META_BASELINE
+FAIL_ACTIONABLE_MOVE_RECOMMENDATION_WITHOUT_META_BASELINE
+FAIL_ACTIONABLE_SPREAD_RECOMMENDATION_WITHOUT_META_BASELINE
+FAIL_LOCAL_FALLBACK_WITHOUT_SEARCH_ATTEMPT
+FAIL_ITEMTHREATFIT_USED_AS_META_BASELINE
+FAIL_ITEM_CLAUSE_REPAIR_USED_AS_FINAL_RECOMMENDATION
+FAIL_LOCAL_TEAM_FIT_USED_AS_FINAL_RECOMMENDATION
+FAIL_LOCAL_BENCHMARK_OVERRIDE_WITHOUT_DIFF
+FAIL_META_BASELINE_SLOT_MISSING
+FAIL_META_BASELINE_SOURCE_NOT_APPROVED
 ```

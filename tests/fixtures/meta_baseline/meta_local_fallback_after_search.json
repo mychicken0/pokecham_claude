@@ -1,0 +1,17 @@
+{
+  "format": "pokemon_champions_vgc2026_reg_m_a",
+  "search_attempts": [
+    {"pokemon":"Sinistcha","field":"item","source_family":"Pikalytics","query":"Sinistcha Champions Reg M-A item usage","result_status":"no_results"},
+    {"pokemon":"Sinistcha","field":"moves","source_family":"Pokemon-Zone Champions","query":"Sinistcha Champions moves","result_status":"no_results"},
+    {"pokemon":"Sinistcha","field":"spread","source_family":"Pokemon-Zone Champions","query":"Sinistcha Champions spread","result_status":"no_results"},
+    {"pokemon":"Sinistcha","field":"nature","source_family":"Pokemon-Zone Champions","query":"Sinistcha Champions nature","result_status":"no_results"},
+    {"pokemon":"Sinistcha","field":"ability","source_family":"Pokemon-Zone Champions","query":"Sinistcha Champions ability","result_status":"no_results"}
+  ],
+  "slot_baselines": [
+    {"pokemon":"Sinistcha","field":"item","value":"Sitrus Berry","baseline_status":"LOCAL_FALLBACK_AFTER_SEARCH"},
+    {"pokemon":"Sinistcha","field":"moves","value":["Matcha Gotcha","Life Dew","Rage Powder","Protect"],"baseline_status":"LOCAL_FALLBACK_AFTER_SEARCH"},
+    {"pokemon":"Sinistcha","field":"spread","value":{"hp":32,"atk":0,"def":4,"spa":0,"spd":29,"spe":0},"baseline_status":"LOCAL_FALLBACK_AFTER_SEARCH"},
+    {"pokemon":"Sinistcha","field":"nature","value":"Bold","baseline_status":"LOCAL_FALLBACK_AFTER_SEARCH"},
+    {"pokemon":"Sinistcha","field":"ability","value":"Hospitality","baseline_status":"LOCAL_FALLBACK_AFTER_SEARCH"}
+  ]
+}

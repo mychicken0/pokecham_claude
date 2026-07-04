@@ -152,7 +152,7 @@ python3 scripts/verify.py mechanic-effect "Life Orb" --context damage
 
 Every move/item/ability structured receipt must reference an entity confirmed in current 08. Classification coverage is required for all current 08 moves/items/abilities, but classification is not the same as numeric implementation.
 
-Damage calc input provenance matters. A valid damage number from a `LOCAL_FALLBACK` spread is not a meta benchmark. Label it as local/experimental unless the spread source is `META_SPREAD_DIRECT`, `TOURNAMENT_LIST_DIRECT`, or `USER_PROVIDED`.
+Damage calc input provenance matters. A valid damage number from a `LOCAL_FALLBACK_AFTER_SEARCH` or experimental spread is not a meta benchmark. Label it as local/experimental unless the spread source is `META_SPREAD_DIRECT`, `TOURNAMENT_LIST_DIRECT`, or `USER_PROVIDED`.
 
 ## 8. Speed and priority resolution
 
@@ -225,7 +225,7 @@ Speed override needs speed benchmark.
 Bulk override needs damage/survival benchmark.
 Item/move override needs mechanic/team-fit/source reason.
 
-If no benchmark supports the override, keep the meta baseline or label the alternative as `LOCAL_FALLBACK` / `EXPERIMENTAL`.
+If no benchmark supports the override, keep the meta baseline or label the alternative as `LOCAL_FALLBACK_AFTER_SEARCH` / `EXPERIMENTAL`.
 
 
 ## 13. Speed-mode planning

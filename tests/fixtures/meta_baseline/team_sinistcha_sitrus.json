@@ -1,0 +1,5 @@
+{
+  "team": [
+    {"pokemon":"Sinistcha","ability":"Hospitality","item":"Sitrus Berry","nature":"Bold","spread":{"hp":32,"atk":0,"def":4,"spa":0,"spd":29,"spe":0},"moves":["Matcha Gotcha","Life Dew","Rage Powder","Protect"]}
+  ]
+}

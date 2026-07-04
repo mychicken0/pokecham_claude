@@ -1,0 +1,9 @@
+{
+  "format": "pokemon_champions_vgc2026_reg_m_a",
+  "search_attempts": [
+    {"pokemon":"Dragonite","field":"item","source_family":"BlueStacks","query":"Dragonite item","result_status":"found"}
+  ],
+  "slot_baselines": [
+    {"pokemon":"Dragonite","field":"item","value":"Wide Lens","baseline_status":"META_DIRECT","source_family":"BlueStacks","source_name":"BlueStacks guide"}
+  ]
+}

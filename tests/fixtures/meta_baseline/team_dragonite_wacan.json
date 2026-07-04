@@ -1,0 +1,5 @@
+{
+  "team": [
+    {"pokemon":"Dragonite","ability":"Multiscale","item":"Wacan Berry","nature":"Modest","spread":{"hp":0,"atk":0,"def":0,"spa":0,"spd":0,"spe":0},"moves":["Dragon Pulse","Heat Wave","Thunderbolt","Protect"]}
+  ]
+}

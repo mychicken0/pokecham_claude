@@ -34,7 +34,7 @@ For any **actionable Pokémon Champions advice** that recommends, ranks, edits, 
 18. Re-lint.
 19. Final answer.
 
-Local legality may never replace the live/player baseline for actionable advice. Local files prove what is legal; live/player evidence shows what people actually use.
+Local legality may never replace the live/player baseline for actionable advice. Local files prove what is legal; live/player evidence shows what people actually use; `meta-baseline-gate` proves whether a final slot recommendation is eligible.
 
 ## 3. Actionable advice rule
 
@@ -68,7 +68,7 @@ Failed candidates must not appear in final team, final risk sections, final exam
 Public output has no safe zones. Team, set, lead, risk, threat, example, explanation, and “why this works” sections all require the same receipts.
 
 - No local receipt = no named entity.
-- No meta baseline = no actionable final recommendation.
+- No meta baseline gate pass = no actionable final item/move/spread/nature/ability recommendation.
 - No typechart/direction-explicit matrix/switch-safety/damage type receipt = no type-effectiveness, weakness, resistance, immunity, or coverage claim.
 - No typepassive receipt = no type passive/status/weather/hazard claim.
 - No mechanic/interaction/boardscan receipt = no mechanic, ally-damage, or board claim.
@@ -132,9 +132,9 @@ Meta/source labels:
 - `META_SPREAD_DIRECT` — exact spread table/source for the Pokémon/form.
 - `TOURNAMENT_LIST_DIRECT` — from real tournament/teamlist.
 - `META_PATTERN` — pattern exists but exact set is incomplete.
-- `LOCAL_FALLBACK` — live/player data was searched but unavailable; local-verified fallback only.
-- `LOCAL_TEAM_FIT` — legal local choice chosen for this team.
-- `LOCAL_BENCHMARK_OVERRIDE` — departure from meta backed by speed/damage/mechanic benchmark.
+- `LOCAL_FALLBACK_AFTER_SEARCH` — approved live/player data was searched for this Pokémon+slot and unavailable; local-verified fallback only.
+- `LOCAL_TEAM_FIT` — intermediate audit label only; not final recommendation evidence by itself.
+- `LOCAL_BENCHMARK_OVERRIDE` — departure from meta backed by explicit diff from the meta baseline and speed/damage/mechanic benchmark.
 - `USER_REQUESTED` — user explicitly requested it.
 - `EXPERIMENTAL` — not sold as meta.
 
@@ -159,7 +159,7 @@ Move, item, and spread choices should show the key provenance when it affects tr
 ```text
 Dragon Pulse — META_DIRECT, usage 73.5%
 Weather Ball — META_DIRECT, usage 87.7%
-Thunder Wave — LOCAL_FALLBACK / not meta baseline
+Thunder Wave — LOCAL_FALLBACK_AFTER_SEARCH / not meta baseline
 ```
 
 
@@ -176,7 +176,7 @@ Focus Sash does not ban bulk, but bulky Focus Sash spreads require proof: `META_
 Before item, risk, weakness, stat-adjective, or mechanic explanations, run or rely on team gates for:
 
 - `threataudit` — full defensive type profile, base stat profile, and board risks such as ally Earthquake.
-- `itemthreatfit` — defensive item/berry choice checked against all weaknesses and board risk.
+- `itemthreatfit` — defensive item/berry fit audit only. It proves “fits a threat”, not “is meta” or “should be final”.
 - `stat` / team displayed stats — before words like ถึก, บาง, เร็ว, ช้า, bulky, frail, fast, or slow.
 - `mechanic` / `interaction` / `boardscan` — before saying an ability or move does exact stages, sequences, or board effects.
 
@@ -262,7 +262,7 @@ If required meta/player data or local receipts are missing:
 
 - Do not output a final recommended team/set/counter.
 - Output a concise audit: what is missing, what was verified, what needs search/verification next.
-- Label local-only candidates as `LOCAL_FALLBACK`, not meta.
+- Label local-only candidates as `LOCAL_FALLBACK_AFTER_SEARCH`, not meta, and only after an approved search-attempt receipt.
 
 ## 16. File ownership map
 

@@ -1,4 +1,4 @@
-# 02 — Live / Player Meta Search Guide v29.38
+# 02 — Live / Player Meta Search Guide v29.46
 
 This file owns live/player/meta source policy. Legality and mechanics remain local/verifier responsibilities.
 
@@ -65,7 +65,7 @@ Extract only what the source supports:
 }
 ```
 
-Do not fill missing move/item/spread slots from memory. Missing data remains missing until verified by another approved source or becomes `LOCAL_FALLBACK` after search.
+Do not fill missing move/item/spread slots from memory. Missing data remains missing until verified by another approved source or becomes `LOCAL_FALLBACK_AFTER_SEARCH` after an explicit search-attempt receipt.
 
 ## 6. Usage-ranked moves/items/spreads
 
@@ -93,7 +93,7 @@ Label it as `TOURNAMENT_LIST_DIRECT` and still local-verify every entity.
 If no approved source provides a move/item/spread after search:
 
 1. Say the baseline slot is missing.
-2. Use `LOCAL_FALLBACK` only after local verification.
+2. Use `LOCAL_FALLBACK_AFTER_SEARCH` only after local verification and a matching search-attempt receipt.
 3. Do not call it meta.
 4. Avoid high-confidence language such as “ดีที่สุด”, “แน่”, “standard” unless supported.
 
@@ -109,3 +109,20 @@ After extraction, every public entity must pass local verification:
 - Active form: resolved before stats, typing, ability, and damage.
 
 Live meta creates candidates; local verification decides if they may appear in final output. Feed the extracted baseline into the decision trace before final play/lead recommendations.
+
+
+## 10. v29.46 search-attempt receipt schema
+
+Use this compact schema for every searched Pokémon+slot that may become a final recommendation:
+
+```json
+{
+  "pokemon": "Dragonite",
+  "field": "item",
+  "source_family": "Pikalytics",
+  "query": "Dragonite Champions Reg M-A item usage",
+  "result_status": "found | no_results | unavailable"
+}
+```
+
+`LOCAL_FALLBACK_AFTER_SEARCH` is invalid without a matching `no_results` or `unavailable` search attempt. Blocked sources such as BlueStacks, generic SEO pages, generic VGC, Showdown, or Smogon cannot satisfy this receipt.

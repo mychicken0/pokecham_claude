@@ -6,6 +6,8 @@ from pathlib import Path
 from . import legacy
 from .switch_matrix import verify_switch_safety_matrix
 from .report_lint import battle_report_lint
+from .meta_baseline import meta_baseline_gate, meta_baseline_lint
+from .recommendation_lint import recommendation_provenance_lint
 from .type_matrix import verify_incoming_defense_matrix
 
 
@@ -141,10 +143,76 @@ def run_all_regression_tests() -> dict:
     checks.append({"name": "battle-report-bad-ambiguous-table", "receipt": report_bad_ambiguous})
     checks.append({"name": "battle-report-bad-receipt-dump", "receipt": report_bad_dump})
 
+
+
+    # v29.46 meta-baseline hardgate regressions.
+    mb_dir = _fixture_path("tests", "fixtures", "meta_baseline")
+    ans_dir = _fixture_path("tests", "fixtures", "answers")
+    rec_dir = _fixture_path("tests", "receipts")
+    team_whiteherb = legacy._load_json_arg(str(mb_dir / "team_dragonite_whiteherb.json"))
+    team_wacan = legacy._load_json_arg(str(mb_dir / "team_dragonite_wacan.json"))
+    team_sinistcha = legacy._load_json_arg(str(mb_dir / "team_sinistcha_sitrus.json"))
+    meta_good = legacy._load_json_arg(str(mb_dir / "meta_good_dragonite_item.json"))
+    meta_bluestacks = legacy._load_json_arg(str(mb_dir / "meta_bad_bluestacks.json"))
+    meta_missing_search = legacy._load_json_arg(str(mb_dir / "meta_missing_search_attempt.json"))
+    meta_fallback = legacy._load_json_arg(str(mb_dir / "meta_local_fallback_after_search.json"))
+    meta_override = legacy._load_json_arg(str(mb_dir / "meta_benchmark_override_with_diff.json"))
+    meta_override_bad = legacy._load_json_arg(str(mb_dir / "meta_benchmark_override_without_diff.json"))
+    meta_itemthreatfit = legacy._load_json_arg(str(mb_dir / "meta_itemthreatfit_only.json"))
+
+    mb_good_lint = meta_baseline_lint(meta_good)
+    mb_bad_source = meta_baseline_lint(meta_bluestacks)
+    mb_missing_search = meta_baseline_lint(meta_missing_search)
+    mb_fallback_lint = meta_baseline_lint(meta_fallback)
+    mb_override_lint = meta_baseline_lint(meta_override)
+    mb_override_bad_lint = meta_baseline_lint(meta_override_bad)
+    mb_itemthreatfit_lint = meta_baseline_lint(meta_itemthreatfit)
+    mb_good_gate = meta_baseline_gate(team_whiteherb, meta_good)
+    mb_wacan_fail = meta_baseline_gate(team_wacan, meta_good, fields=["item"])
+    mb_fallback_gate = meta_baseline_gate(team_sinistcha, meta_fallback)
+    mb_override_gate = meta_baseline_gate(team_wacan, meta_override)
+
+    if mb_good_lint.get("status") != "pass" or mb_good_gate.get("status") != "pass":
+        failures.append({"name": "meta-baseline-good-direct", "expected": "pass", "lint": mb_good_lint, "gate": mb_good_gate})
+    if "FAIL_META_BASELINE_SOURCE_NOT_APPROVED" not in {f.get("code") for f in mb_bad_source.get("failures", [])}:
+        failures.append({"name": "meta-baseline-blocked-source", "expected_code": "FAIL_META_BASELINE_SOURCE_NOT_APPROVED", "receipt": mb_bad_source})
+    if "FAIL_LOCAL_FALLBACK_WITHOUT_SEARCH_ATTEMPT" not in {f.get("code") for f in mb_missing_search.get("failures", [])}:
+        failures.append({"name": "meta-baseline-missing-search-attempt", "expected_code": "FAIL_LOCAL_FALLBACK_WITHOUT_SEARCH_ATTEMPT", "receipt": mb_missing_search})
+    if mb_fallback_lint.get("status") != "pass" or mb_fallback_gate.get("status") != "pass":
+        failures.append({"name": "meta-baseline-local-fallback-after-search", "expected": "pass", "lint": mb_fallback_lint, "gate": mb_fallback_gate})
+    if mb_override_lint.get("status") != "pass" or mb_override_gate.get("status") != "pass":
+        failures.append({"name": "meta-baseline-benchmark-override", "expected": "pass", "lint": mb_override_lint, "gate": mb_override_gate})
+    if "FAIL_LOCAL_BENCHMARK_OVERRIDE_WITHOUT_DIFF" not in {f.get("code") for f in mb_override_bad_lint.get("failures", [])}:
+        failures.append({"name": "meta-baseline-override-without-diff", "expected_code": "FAIL_LOCAL_BENCHMARK_OVERRIDE_WITHOUT_DIFF", "receipt": mb_override_bad_lint})
+    if "FAIL_ITEMTHREATFIT_USED_AS_META_BASELINE" not in {f.get("code") for f in mb_itemthreatfit_lint.get("failures", [])}:
+        failures.append({"name": "meta-baseline-itemthreatfit-only", "expected_code": "FAIL_ITEMTHREATFIT_USED_AS_META_BASELINE", "receipt": mb_itemthreatfit_lint})
+    if "FAIL_ACTIONABLE_ITEM_RECOMMENDATION_WITHOUT_META_BASELINE" not in {f.get("code") for f in mb_wacan_fail.get("failures", [])}:
+        failures.append({"name": "meta-baseline-wacan-without-meta", "expected_code": "FAIL_ACTIONABLE_ITEM_RECOMMENDATION_WITHOUT_META_BASELINE", "receipt": mb_wacan_fail})
+
+    rec_bad_wacan = recommendation_provenance_lint((ans_dir / "answer_bad_wacan_without_meta.md").read_text(), mb_wacan_fail)
+    rec_bad_widelens = recommendation_provenance_lint((ans_dir / "answer_bad_wide_lens_itemclause_only.md").read_text(), legacy._load_json_arg(str(rec_dir / "receipt_empty.json")))
+    rec_good_override = recommendation_provenance_lint((ans_dir / "answer_good_benchmark_override.md").read_text(), mb_override_gate)
+    if rec_good_override.get("status") != "pass":
+        failures.append({"name": "recommendation-provenance-good-override", "expected": "pass", "receipt": rec_good_override})
+    if "FAIL_ACTIONABLE_RECOMMENDATION_WITH_FAILED_META_BASELINE_GATE" not in {f.get("code") for f in rec_bad_wacan.get("failures", [])}:
+        failures.append({"name": "recommendation-provenance-bad-wacan", "expected_code": "FAIL_ACTIONABLE_RECOMMENDATION_WITH_FAILED_META_BASELINE_GATE", "receipt": rec_bad_wacan})
+    if "FAIL_ACTIONABLE_RECOMMENDATION_WITHOUT_META_BASELINE_GATE" not in {f.get("code") for f in rec_bad_widelens.get("failures", [])}:
+        failures.append({"name": "recommendation-provenance-bad-widelens", "expected_code": "FAIL_ACTIONABLE_RECOMMENDATION_WITHOUT_META_BASELINE_GATE", "receipt": rec_bad_widelens})
+
+    checks.extend([
+        {"name": "meta-baseline-good-direct", "receipt": mb_good_gate},
+        {"name": "meta-baseline-blocked-source", "receipt": mb_bad_source},
+        {"name": "meta-baseline-local-fallback-after-search", "receipt": mb_fallback_gate},
+        {"name": "meta-baseline-benchmark-override", "receipt": mb_override_gate},
+        {"name": "meta-baseline-wacan-without-meta", "receipt": mb_wacan_fail},
+        {"name": "recommendation-provenance-bad-wacan", "receipt": rec_bad_wacan},
+        {"name": "recommendation-provenance-good-override", "receipt": rec_good_override},
+    ])
+
     return {
         "mode": "all_regression_tests",
         "status": "pass" if not failures else "fail",
         "checks": checks,
         "failures": failures,
-        "rule": "Run before and after verifier refactors. v29.45 preserves CLI compatibility, v29.44 action matrices, and adds readable battle report output lint gates.",
+        "rule": "Run before and after verifier refactors. v29.46 preserves CLI compatibility, v29.44 action matrices, v29.45 battle reports, and adds meta-baseline hard gates.",
     }

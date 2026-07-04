@@ -1,0 +1,125 @@
+{
+  "mode": "meta_baseline_gate",
+  "engine_version": "v29.46-meta-baseline-hardgate-docorder",
+  "status": "pass",
+  "public_recommendation_allowed": true,
+  "slots": [
+    {
+      "slot": 1,
+      "pokemon": "Dragonite",
+      "fields": {
+        "item": {
+          "status": "pass",
+          "evidence_label": "LOCAL_BENCHMARK_OVERRIDE",
+          "evidence": {
+            "pokemon": "Dragonite",
+            "field": "item",
+            "baseline_value": "White Herb",
+            "final_value": "Wacan Berry",
+            "baseline_status": "LOCAL_BENCHMARK_OVERRIDE",
+            "diff": "Electric survival role selected over baseline item for this local test fixture.",
+            "benchmark_receipts": [
+              "fixture-itemthreatfit-electric-risk"
+            ]
+          },
+          "rule": "local override includes explicit diff from meta baseline",
+          "final_value": "Wacan Berry"
+        },
+        "moves": {
+          "status": "pass",
+          "evidence_label": "META_DIRECT",
+          "evidence": {
+            "pokemon": "Dragonite",
+            "field": "moves",
+            "value": [
+              "Dragon Pulse",
+              "Heat Wave",
+              "Thunderbolt",
+              "Protect"
+            ],
+            "baseline_status": "META_DIRECT",
+            "source_family": "Pikalytics",
+            "source_name": "Pikalytics Champions"
+          },
+          "rule": "final value matches approved/player baseline",
+          "final_value": [
+            "Dragon Pulse",
+            "Heat Wave",
+            "Thunderbolt",
+            "Protect"
+          ]
+        },
+        "spread": {
+          "status": "pass",
+          "evidence_label": "META_SPREAD_DIRECT",
+          "evidence": {
+            "pokemon": "Dragonite",
+            "field": "spread",
+            "value": {
+              "hp": 0,
+              "atk": 0,
+              "def": 0,
+              "spa": 0,
+              "spd": 0,
+              "spe": 0
+            },
+            "baseline_status": "META_SPREAD_DIRECT",
+            "source_family": "Pikalytics",
+            "source_name": "Pikalytics Champions"
+          },
+          "rule": "final value matches approved/player baseline",
+          "final_value": {
+            "hp": 0,
+            "atk": 0,
+            "def": 0,
+            "spa": 0,
+            "spd": 0,
+            "spe": 0
+          }
+        },
+        "nature": {
+          "status": "pass",
+          "evidence_label": "META_DIRECT",
+          "evidence": {
+            "pokemon": "Dragonite",
+            "field": "nature",
+            "value": "Modest",
+            "baseline_status": "META_DIRECT",
+            "source_family": "Pikalytics",
+            "source_name": "Pikalytics Champions"
+          },
+          "rule": "final value matches approved/player baseline",
+          "final_value": "Modest"
+        },
+        "ability": {
+          "status": "pass",
+          "evidence_label": "META_DIRECT",
+          "evidence": {
+            "pokemon": "Dragonite",
+            "field": "ability",
+            "value": "Multiscale",
+            "baseline_status": "META_DIRECT",
+            "source_family": "Pikalytics",
+            "source_name": "Pikalytics Champions"
+          },
+          "rule": "final value matches approved/player baseline",
+          "final_value": "Multiscale"
+        }
+      }
+    }
+  ],
+  "lint": {
+    "mode": "meta_baseline_lint",
+    "engine_version": "v29.46-meta-baseline-hardgate-docorder",
+    "status": "pass",
+    "failures": [],
+    "warnings": [],
+    "search_attempt_count": 1,
+    "slot_baseline_count": 5,
+    "override_count": 1,
+    "rule": "Actionable recommendations require approved source baselines, LOCAL_FALLBACK_AFTER_SEARCH with matching search attempt, or LOCAL_BENCHMARK_OVERRIDE with explicit diff."
+  },
+  "failures": [],
+  "warnings": [],
+  "rule": "Final actionable item/move/spread/nature/ability recommendations require per-slot meta baseline, searched local fallback, user request, or benchmark override."
+}

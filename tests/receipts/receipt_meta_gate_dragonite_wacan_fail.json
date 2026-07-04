@@ -1,0 +1,42 @@
+{
+  "mode": "meta_baseline_gate",
+  "engine_version": "v29.46-meta-baseline-hardgate-docorder",
+  "status": "fail",
+  "public_recommendation_allowed": false,
+  "slots": [
+    {
+      "slot": 1,
+      "pokemon": "Dragonite",
+      "fields": {
+        "item": {
+          "status": "fail",
+          "code": "FAIL_ACTIONABLE_ITEM_RECOMMENDATION_WITHOUT_META_BASELINE",
+          "detail": "No matching meta/search fallback/benchmark override evidence for final slot value.",
+          "final_value": "Wacan Berry"
+        }
+      }
+    }
+  ],
+  "lint": {
+    "mode": "meta_baseline_lint",
+    "engine_version": "v29.46-meta-baseline-hardgate-docorder",
+    "status": "pass",
+    "failures": [],
+    "warnings": [],
+    "search_attempt_count": 1,
+    "slot_baseline_count": 5,
+    "override_count": 0,
+    "rule": "Actionable recommendations require approved source baselines, LOCAL_FALLBACK_AFTER_SEARCH with matching search attempt, or LOCAL_BENCHMARK_OVERRIDE with explicit diff."
+  },
+  "failures": [
+    {
+      "code": "FAIL_ACTIONABLE_ITEM_RECOMMENDATION_WITHOUT_META_BASELINE",
+      "pokemon": "Dragonite",
+      "field": "item",
+      "final_value": "Wacan Berry",
+      "detail": "No matching meta/search fallback/benchmark override evidence for final slot value."
+    }
+  ],
+  "warnings": [],
+  "rule": "Final actionable item/move/spread/nature/ability recommendations require per-slot meta baseline, searched local fallback, user request, or benchmark override."
+}

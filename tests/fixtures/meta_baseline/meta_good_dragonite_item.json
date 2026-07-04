@@ -1,0 +1,13 @@
+{
+  "format": "pokemon_champions_vgc2026_reg_m_a",
+  "search_attempts": [
+    {"pokemon":"Dragonite","field":"item","source_family":"Pikalytics","query":"Dragonite Champions Reg M-A item usage","result_status":"found"}
+  ],
+  "slot_baselines": [
+    {"pokemon":"Dragonite","field":"item","value":"White Herb","baseline_status":"META_DIRECT","source_family":"Pikalytics","source_name":"Pikalytics Champions","usage":"example fixture"},
+    {"pokemon":"Dragonite","field":"moves","value":["Dragon Pulse","Heat Wave","Thunderbolt","Protect"],"baseline_status":"META_DIRECT","source_family":"Pikalytics","source_name":"Pikalytics Champions"},
+    {"pokemon":"Dragonite","field":"nature","value":"Modest","baseline_status":"META_DIRECT","source_family":"Pikalytics","source_name":"Pikalytics Champions"},
+    {"pokemon":"Dragonite","field":"ability","value":"Multiscale","baseline_status":"META_DIRECT","source_family":"Pikalytics","source_name":"Pikalytics Champions"},
+    {"pokemon":"Dragonite","field":"spread","value":{"hp":0,"atk":0,"def":0,"spa":0,"spd":0,"spe":0},"baseline_status":"META_SPREAD_DIRECT","source_family":"Pikalytics","source_name":"Pikalytics Champions"}
+  ]
+}
