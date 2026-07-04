@@ -1,6 +1,48 @@
-# 04 — Verification Harness Spec v29.42
+# 04 — Verification Harness Spec v29.43
 
 This file owns `scripts/verify.py` commands, receipts, lint/selfaudit, and fail/warning code groups.
+
+
+## v29.43 verifier package layout
+
+Public CLI remains stable:
+
+```bash
+python3 scripts/verify.py <command> ...
+```
+
+`verify.py` is now a facade. Implementation seams live under `scripts/pokecham_verify/`:
+
+```text
+cli.py                  command router
+legacy.py               v29.42-compatible engine bridge
+type_matrix.py          defensive/offensive type matrix receipts
+regression.py           all-regression-tests
+ids.py/data_loader.py/... thin extraction seams for future module moves
+```
+
+The facade is intentional: external skill docs and user workflows must not call multiple scripts directly.
+
+## Type matrix command
+
+```bash
+python3 scripts/verify.py type-matrix <team.json> [targets.json]
+```
+
+Purpose: build receipt-backed type tables.
+
+- Defensive matrix: all bundled attacking types into every submitted team slot.
+- Offensive matrix: only actual move types from the submitted set into supplied targets; if no targets are supplied, the submitted team is used as a local sanity target list.
+
+Public-use rule: matchup/weakness/resistance/coverage claims must cite direct `typechart`, `type-matrix`, or damage typechart provenance.
+
+## Regression command
+
+```bash
+python3 scripts/verify.py all-regression-tests
+```
+
+Run before packaging verifier changes. It includes mechanic data lint/coverage, typechart traps including `Ground → Sinistcha = 0.5x resisted`, typepassive smoke tests, and mechanic interaction smoke tests.
 
 ## 1. Receipt principle
 

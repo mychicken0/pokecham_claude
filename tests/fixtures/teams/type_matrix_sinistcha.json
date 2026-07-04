@@ -1,0 +1,7 @@
+{
+  "team": [
+    {"pokemon":"Sinistcha","ability":"Heatproof","item":"Sitrus Berry","nature":"Bold","spread":{"hp":32,"atk":0,"def":32,"spa":2,"spd":0,"spe":0},"moves":["Matcha Gotcha","Shadow Ball","Rage Powder","Protect"]}
+  ],
+  "item_clause": true,
+  "spread_required": true
+}

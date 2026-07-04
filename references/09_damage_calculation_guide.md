@@ -1,4 +1,4 @@
-# 09 — Stat / Damage / Type / Board Math Guide v29.42
+# 09 — Stat / Damage / Type / Board Math Guide v29.43
 
 This file owns numeric and mechanical math. Source policy lives in `02`; command syntax lives in `04`.
 
@@ -51,7 +51,14 @@ Ghost → Normal = 0x immune
 Fire → Steel/Dragon = 1x neutral
 Fighting → Steel/Dragon = 2x super_effective
 Ground → Flying = 0x immune
+Ground → Sinistcha = 0.5x resisted
 ```
+
+## 4.1 Type matrix receipts
+
+Use `verify.py type-matrix <team.json> [targets.json]` for team-level type analysis. Defensive matrix must cover every attacking type into every team slot. Offensive matrix must use only actual move types on the submitted sets.
+
+No public team matchup, coverage, weakness, resistance, or immunity claim should be written from memory when a type-matrix or direct typechart receipt can be generated.
 
 ## 5. Type passive properties
 

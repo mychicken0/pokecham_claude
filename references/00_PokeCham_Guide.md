@@ -1,4 +1,4 @@
-# 00 — PokeCham Main Contract v29.42
+# 00 — PokeCham Main Contract v29.43
 
 This is the main contract. Other reference files own specialized details and should be cited by role, not duplicated.
 
@@ -69,7 +69,7 @@ Public output has no safe zones. Team, set, lead, risk, threat, example, explana
 
 - No local receipt = no named entity.
 - No meta baseline = no actionable final recommendation.
-- No typechart receipt = no type-effectiveness claim.
+- No typechart/type-matrix/damage type receipt = no type-effectiveness, weakness, resistance, immunity, or coverage claim.
 - No typepassive receipt = no type passive/status/weather/hazard claim.
 - No mechanic/interaction/boardscan receipt = no mechanic, ally-damage, or board claim.
 - No stat receipt = no stat number or stat adjective such as ถึก/บาง/เร็ว/ช้า.
@@ -291,3 +291,7 @@ python3 scripts/verify.py mechanic-coverage
 ```
 
 Do not add or recommend a move/item/ability absent from current local DB. In this pack, `Choice Band`, `Choice Specs`, `Clear Amulet`, and `Assault Vest` are absent items and remain blocked.
+
+## v29.43 ownership rule
+
+Keep prompt docs small. Put facts in `data/*.csv` / `data/*.jsonl`, enforcement in `scripts/pokecham_verify/`, command syntax in `04`, and math policy in `09`. Do not duplicate long mechanic lists in this contract.

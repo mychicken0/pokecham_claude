@@ -1,0 +1,1886 @@
+{
+  "mode": "type_matrix",
+  "engine_version": "v29.43-refactor-typematrix-docclean",
+  "status": "pass",
+  "team_status": "fail",
+  "team_receipt": {
+    "mode": "full_team_verification",
+    "input_count": 1,
+    "item_clause": true,
+    "spread_required": true,
+    "sets": [
+      {
+        "mode": "team_set_verification",
+        "input": {
+          "pokemon": "Sinistcha",
+          "ability": "Heatproof",
+          "item": "Sitrus Berry",
+          "nature": "Bold",
+          "spread": {
+            "hp": 32,
+            "atk": 0,
+            "def": 32,
+            "spa": 2,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Matcha Gotcha",
+            "Shadow Ball",
+            "Rage Powder",
+            "Protect"
+          ]
+        },
+        "pokemon_gate": {
+          "entity": "pokemon",
+          "query": "Sinistcha",
+          "id": "sinistcha",
+          "name": "Sinistcha",
+          "types": "Grass|Ghost",
+          "stats": {
+            "hp": "71",
+            "atk": "60",
+            "def": "106",
+            "spa": "121",
+            "spd": "80",
+            "spe": "70"
+          },
+          "abilities": [
+            "Hospitality",
+            "Heatproof"
+          ],
+          "ranked_default_status": "ranked_allowed_champions_confirmed",
+          "strict_M_B_status": "needs_check",
+          "current_format_status": "M-A:confirmed; M-B:needs_check",
+          "image_asset": {
+            "kind": "pokemon",
+            "id": "sinistcha",
+            "name": "Sinistcha",
+            "status": "replaced_by_ascii",
+            "ascii_asset": {
+              "kind": "pokemon",
+              "id": "sinistcha",
+              "requested_id": "sinistcha",
+              "name": "Sinistcha",
+              "status": "pass",
+              "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+              "source": "assets/champions_ascii/ascii_bundle.json",
+              "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+            },
+            "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+          },
+          "ascii_asset": {
+            "kind": "pokemon",
+            "id": "sinistcha",
+            "requested_id": "sinistcha",
+            "name": "Sinistcha",
+            "status": "pass",
+            "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+            "source": "assets/champions_ascii/ascii_bundle.json",
+            "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+          },
+          "source": "01",
+          "status": "pass"
+        },
+        "active_form": {
+          "entity": "active_form",
+          "status": "pass",
+          "team_form": {
+            "entity": "pokemon",
+            "query": "sinistcha",
+            "id": "sinistcha",
+            "name": "Sinistcha",
+            "types": "Grass|Ghost",
+            "stats": {
+              "hp": "71",
+              "atk": "60",
+              "def": "106",
+              "spa": "121",
+              "spd": "80",
+              "spe": "70"
+            },
+            "abilities": [
+              "Hospitality",
+              "Heatproof"
+            ],
+            "ranked_default_status": "ranked_allowed_champions_confirmed",
+            "strict_M_B_status": "needs_check",
+            "current_format_status": "M-A:confirmed; M-B:needs_check",
+            "image_asset": {
+              "kind": "pokemon",
+              "id": "sinistcha",
+              "name": "Sinistcha",
+              "status": "replaced_by_ascii",
+              "ascii_asset": {
+                "kind": "pokemon",
+                "id": "sinistcha",
+                "requested_id": "sinistcha",
+                "name": "Sinistcha",
+                "status": "pass",
+                "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+                "source": "assets/champions_ascii/ascii_bundle.json",
+                "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+              },
+              "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+            },
+            "ascii_asset": {
+              "kind": "pokemon",
+              "id": "sinistcha",
+              "requested_id": "sinistcha",
+              "name": "Sinistcha",
+              "status": "pass",
+              "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+              "source": "assets/champions_ascii/ascii_bundle.json",
+              "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+            },
+            "source": "01",
+            "status": "pass"
+          },
+          "active_form": {
+            "entity": "pokemon",
+            "query": "sinistcha",
+            "id": "sinistcha",
+            "name": "Sinistcha",
+            "types": "Grass|Ghost",
+            "stats": {
+              "hp": "71",
+              "atk": "60",
+              "def": "106",
+              "spa": "121",
+              "spd": "80",
+              "spe": "70"
+            },
+            "abilities": [
+              "Hospitality",
+              "Heatproof"
+            ],
+            "ranked_default_status": "ranked_allowed_champions_confirmed",
+            "strict_M_B_status": "needs_check",
+            "current_format_status": "M-A:confirmed; M-B:needs_check",
+            "image_asset": {
+              "kind": "pokemon",
+              "id": "sinistcha",
+              "name": "Sinistcha",
+              "status": "replaced_by_ascii",
+              "ascii_asset": {
+                "kind": "pokemon",
+                "id": "sinistcha",
+                "requested_id": "sinistcha",
+                "name": "Sinistcha",
+                "status": "pass",
+                "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+                "source": "assets/champions_ascii/ascii_bundle.json",
+                "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+              },
+              "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+            },
+            "ascii_asset": {
+              "kind": "pokemon",
+              "id": "sinistcha",
+              "requested_id": "sinistcha",
+              "name": "Sinistcha",
+              "status": "pass",
+              "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+              "source": "assets/champions_ascii/ascii_bundle.json",
+              "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+            },
+            "source": "01",
+            "status": "pass"
+          },
+          "team_form_id": "sinistcha",
+          "active_form_id": "sinistcha",
+          "active_changed": false,
+          "form_trigger": "team form",
+          "trigger_receipt": {
+            "status": "not_required"
+          },
+          "item_receipt": {
+            "entity": "item",
+            "query": "Sitrus Berry",
+            "id": "sitrusberry",
+            "name": "Sitrus Berry",
+            "description": "A Berry to be consumed by Pokémon. If a Pokémon holds one, it can restore its own HP by a small amount during battle.",
+            "source_status": "confirmed",
+            "extra": "category=berry; unlock=beginning",
+            "entity_type_expected": "item",
+            "matched_rows": 1,
+            "image_asset": {
+              "kind": "items",
+              "id": "sitrusberry",
+              "name": "Sitrus Berry",
+              "status": "replaced_by_ascii",
+              "ascii_asset": {
+                "kind": "items",
+                "id": "sitrusberry",
+                "lookup_candidates": [
+                  "sitrusberry"
+                ],
+                "name": "Sitrus Berry",
+                "status": "missing",
+                "source": "assets/champions_ascii/ascii_bundle.json",
+                "reason": "no matching Pokémon ASCII asset id in bundle, or item ASCII is intentionally disabled; text labels remain source of truth"
+              },
+              "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+            },
+            "ascii_asset": {
+              "kind": "items",
+              "id": "sitrusberry",
+              "lookup_candidates": [
+                "sitrusberry"
+              ],
+              "name": "Sitrus Berry",
+              "status": "missing",
+              "source": "assets/champions_ascii/ascii_bundle.json",
+              "reason": "no matching Pokémon ASCII asset id in bundle, or item ASCII is intentionally disabled; text labels remain source of truth"
+            },
+            "source": "08",
+            "status": "pass"
+          },
+          "battle_ability": "Heatproof",
+          "battle_ability_receipt": {
+            "entity": "ability",
+            "pokemon_id": "sinistcha",
+            "ability_name": "Heatproof",
+            "ability_id": "heatproof",
+            "source": "01",
+            "status": "pass"
+          },
+          "stat_source": "sinistcha",
+          "display_name": "Sinistcha",
+          "rule": "team_form selects the roster slot; active_form is the battle stat/type/ability source. No active-form receipt = no form-based stat/damage/speed claim."
+        },
+        "ability": {
+          "entity": "ability",
+          "pokemon_id": "sinistcha",
+          "ability_name": "Heatproof",
+          "ability_id": "heatproof",
+          "source": "01",
+          "status": "pass"
+        },
+        "item": {
+          "entity": "item",
+          "query": "Sitrus Berry",
+          "id": "sitrusberry",
+          "name": "Sitrus Berry",
+          "description": "A Berry to be consumed by Pokémon. If a Pokémon holds one, it can restore its own HP by a small amount during battle.",
+          "source_status": "confirmed",
+          "extra": "category=berry; unlock=beginning",
+          "entity_type_expected": "item",
+          "matched_rows": 1,
+          "image_asset": {
+            "kind": "items",
+            "id": "sitrusberry",
+            "name": "Sitrus Berry",
+            "status": "replaced_by_ascii",
+            "ascii_asset": {
+              "kind": "items",
+              "id": "sitrusberry",
+              "lookup_candidates": [
+                "sitrusberry"
+              ],
+              "name": "Sitrus Berry",
+              "status": "missing",
+              "source": "assets/champions_ascii/ascii_bundle.json",
+              "reason": "no matching Pokémon ASCII asset id in bundle, or item ASCII is intentionally disabled; text labels remain source of truth"
+            },
+            "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+          },
+          "ascii_asset": {
+            "kind": "items",
+            "id": "sitrusberry",
+            "lookup_candidates": [
+              "sitrusberry"
+            ],
+            "name": "Sitrus Berry",
+            "status": "missing",
+            "source": "assets/champions_ascii/ascii_bundle.json",
+            "reason": "no matching Pokémon ASCII asset id in bundle, or item ASCII is intentionally disabled; text labels remain source of truth"
+          },
+          "source": "08",
+          "status": "pass"
+        },
+        "moves": [
+          {
+            "entity": "move",
+            "pokemon_id": "sinistcha",
+            "move_id": "matchagotcha",
+            "move_name": "Matcha Gotcha",
+            "type": "Grass",
+            "emoji": "🌿",
+            "display": "🌿 Matcha Gotcha",
+            "category": "Special",
+            "power": "80",
+            "accuracy": "90",
+            "source": "05-07",
+            "status": "pass"
+          },
+          {
+            "entity": "move",
+            "pokemon_id": "sinistcha",
+            "move_id": "shadowball",
+            "move_name": "Shadow Ball",
+            "type": "Ghost",
+            "emoji": "👻",
+            "display": "👻 Shadow Ball",
+            "category": "Special",
+            "power": "80",
+            "accuracy": "100",
+            "source": "05-07",
+            "status": "pass"
+          },
+          {
+            "entity": "move",
+            "pokemon_id": "sinistcha",
+            "move_id": "ragepowder",
+            "move_name": "Rage Powder",
+            "type": "Bug",
+            "emoji": "🐞",
+            "display": "🐞 Rage Powder",
+            "category": "Status",
+            "power": "",
+            "accuracy": "",
+            "source": "05-07",
+            "status": "pass"
+          },
+          {
+            "entity": "move",
+            "pokemon_id": "sinistcha",
+            "move_id": "protect",
+            "move_name": "Protect",
+            "type": "Normal",
+            "emoji": "⚪",
+            "display": "⚪ Protect",
+            "category": "Status",
+            "power": "",
+            "accuracy": "",
+            "source": "05-07",
+            "status": "pass"
+          }
+        ],
+        "spread": {
+          "entity": "stat_spread",
+          "source": "00/09",
+          "status": "pass",
+          "spread": {
+            "hp": 32,
+            "atk": 0,
+            "def": 32,
+            "spa": 2,
+            "spd": 0,
+            "spe": 0
+          },
+          "order": "HP/Atk/Def/SpA/SpD/Spe",
+          "total": 66,
+          "display": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0; Total 66/66",
+          "display_compact": "HP32 Atk0 Def32 SpA2 SpD0 Spe0",
+          "display_verbose": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0",
+          "display_slash_with_header": "Order: HP / Atk / Def / SpA / SpD / Spe; Spread: 32 / 0 / 32 / 2 / 0 / 0",
+          "display_total": "66/66",
+          "parse_note": "dict",
+          "render_rule": "Public output must show stat labels. Bare 32/0/32/0/2/0 format is invalid unless the stat order header is printed beside it."
+        },
+        "spread_required": true,
+        "stat_required": true,
+        "displayed_stats": {
+          "entity": "displayed_stats",
+          "pokemon_id": "sinistcha",
+          "pokemon_name": "Sinistcha",
+          "team_form_id": "sinistcha",
+          "active_form_id": "sinistcha",
+          "stat_source": "sinistcha",
+          "display_name": "Sinistcha",
+          "active_form_receipt": {
+            "entity": "active_form",
+            "status": "pass",
+            "team_form": {
+              "entity": "pokemon",
+              "query": "sinistcha",
+              "id": "sinistcha",
+              "name": "Sinistcha",
+              "types": "Grass|Ghost",
+              "stats": {
+                "hp": "71",
+                "atk": "60",
+                "def": "106",
+                "spa": "121",
+                "spd": "80",
+                "spe": "70"
+              },
+              "abilities": [
+                "Hospitality",
+                "Heatproof"
+              ],
+              "ranked_default_status": "ranked_allowed_champions_confirmed",
+              "strict_M_B_status": "needs_check",
+              "current_format_status": "M-A:confirmed; M-B:needs_check",
+              "image_asset": {
+                "kind": "pokemon",
+                "id": "sinistcha",
+                "name": "Sinistcha",
+                "status": "replaced_by_ascii",
+                "ascii_asset": {
+                  "kind": "pokemon",
+                  "id": "sinistcha",
+                  "requested_id": "sinistcha",
+                  "name": "Sinistcha",
+                  "status": "pass",
+                  "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+                  "source": "assets/champions_ascii/ascii_bundle.json",
+                  "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+                },
+                "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+              },
+              "ascii_asset": {
+                "kind": "pokemon",
+                "id": "sinistcha",
+                "requested_id": "sinistcha",
+                "name": "Sinistcha",
+                "status": "pass",
+                "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+                "source": "assets/champions_ascii/ascii_bundle.json",
+                "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+              },
+              "source": "01",
+              "status": "pass"
+            },
+            "active_form": {
+              "entity": "pokemon",
+              "query": "sinistcha",
+              "id": "sinistcha",
+              "name": "Sinistcha",
+              "types": "Grass|Ghost",
+              "stats": {
+                "hp": "71",
+                "atk": "60",
+                "def": "106",
+                "spa": "121",
+                "spd": "80",
+                "spe": "70"
+              },
+              "abilities": [
+                "Hospitality",
+                "Heatproof"
+              ],
+              "ranked_default_status": "ranked_allowed_champions_confirmed",
+              "strict_M_B_status": "needs_check",
+              "current_format_status": "M-A:confirmed; M-B:needs_check",
+              "image_asset": {
+                "kind": "pokemon",
+                "id": "sinistcha",
+                "name": "Sinistcha",
+                "status": "replaced_by_ascii",
+                "ascii_asset": {
+                  "kind": "pokemon",
+                  "id": "sinistcha",
+                  "requested_id": "sinistcha",
+                  "name": "Sinistcha",
+                  "status": "pass",
+                  "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+                  "source": "assets/champions_ascii/ascii_bundle.json",
+                  "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+                },
+                "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+              },
+              "ascii_asset": {
+                "kind": "pokemon",
+                "id": "sinistcha",
+                "requested_id": "sinistcha",
+                "name": "Sinistcha",
+                "status": "pass",
+                "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+                "source": "assets/champions_ascii/ascii_bundle.json",
+                "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+              },
+              "source": "01",
+              "status": "pass"
+            },
+            "team_form_id": "sinistcha",
+            "active_form_id": "sinistcha",
+            "active_changed": false,
+            "form_trigger": "team form",
+            "trigger_receipt": {
+              "status": "not_required"
+            },
+            "item_receipt": {
+              "entity": "item",
+              "query": "Sitrus Berry",
+              "id": "sitrusberry",
+              "name": "Sitrus Berry",
+              "description": "A Berry to be consumed by Pokémon. If a Pokémon holds one, it can restore its own HP by a small amount during battle.",
+              "source_status": "confirmed",
+              "extra": "category=berry; unlock=beginning",
+              "entity_type_expected": "item",
+              "matched_rows": 1,
+              "image_asset": {
+                "kind": "items",
+                "id": "sitrusberry",
+                "name": "Sitrus Berry",
+                "status": "replaced_by_ascii",
+                "ascii_asset": {
+                  "kind": "items",
+                  "id": "sitrusberry",
+                  "lookup_candidates": [
+                    "sitrusberry"
+                  ],
+                  "name": "Sitrus Berry",
+                  "status": "missing",
+                  "source": "assets/champions_ascii/ascii_bundle.json",
+                  "reason": "no matching Pokémon ASCII asset id in bundle, or item ASCII is intentionally disabled; text labels remain source of truth"
+                },
+                "reason": "v29.38 uses platform-aware optional Pokémon card views; Claude HTML cards must go through the platform HTML/widget renderer and item ASCII stays disabled"
+              },
+              "ascii_asset": {
+                "kind": "items",
+                "id": "sitrusberry",
+                "lookup_candidates": [
+                  "sitrusberry"
+                ],
+                "name": "Sitrus Berry",
+                "status": "missing",
+                "source": "assets/champions_ascii/ascii_bundle.json",
+                "reason": "no matching Pokémon ASCII asset id in bundle, or item ASCII is intentionally disabled; text labels remain source of truth"
+              },
+              "source": "08",
+              "status": "pass"
+            },
+            "battle_ability": "Heatproof",
+            "battle_ability_receipt": {
+              "entity": "ability",
+              "pokemon_id": "sinistcha",
+              "ability_name": "Heatproof",
+              "ability_id": "heatproof",
+              "source": "01",
+              "status": "pass"
+            },
+            "stat_source": "sinistcha",
+            "display_name": "Sinistcha",
+            "rule": "team_form selects the roster slot; active_form is the battle stat/type/ability source. No active-form receipt = no form-based stat/damage/speed claim."
+          },
+          "nature": "Bold",
+          "nature_effect": {
+            "nature": "Bold",
+            "plus": [
+              "Def"
+            ],
+            "minus": [
+              "Atk"
+            ],
+            "display": "+Def / -Atk",
+            "source": "NATURE_MODIFIERS enum in verify.py",
+            "rule": "Nature display must include +/- effect in public set/card output, e.g. Jolly (+Spe / -SpA)."
+          },
+          "spread": {
+            "hp": 32,
+            "atk": 0,
+            "def": 32,
+            "spa": 2,
+            "spd": 0,
+            "spe": 0
+          },
+          "base_stats": {
+            "hp": 71,
+            "atk": 60,
+            "def": 106,
+            "spa": 121,
+            "spd": 80,
+            "spe": 70
+          },
+          "displayed_stats": {
+            "hp": 178,
+            "atk": 72,
+            "def": 173,
+            "spa": 143,
+            "spd": 100,
+            "spe": 90
+          },
+          "displayed_stats_display": {
+            "compact": "HP 178 / Atk 72 / Def 173 / SpA 143 / SpD 100 / Spe 90",
+            "verbose": "HP 178 / Atk 72 / Def 173 / SpA 143 / SpD 100 / Spe 90"
+          },
+          "spread_display": {
+            "compact": "HP32 Atk0 Def32 SpA2 SpD0 Spe0",
+            "verbose": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0",
+            "slash_with_header": "Order: HP / Atk / Def / SpA / SpD / Spe; Spread: 32 / 0 / 32 / 2 / 0 / 0",
+            "total": "66/66",
+            "order": "HP / Atk / Def / SpA / SpD / Spe"
+          },
+          "formula": "HP = Base + 75 + investment; Non-HP = floor((Base + 20 + investment) * nature_modifier)",
+          "formula_steps": {
+            "hp": "71 + 75 + 32 = 178",
+            "atk": "floor((60 + 20 + 0) * 0.9) = 72",
+            "def": "floor((106 + 20 + 32) * 1.1) = 173",
+            "spa": "floor((121 + 20 + 2) * 1.0) = 143",
+            "spd": "floor((80 + 20 + 0) * 1.0) = 100",
+            "spe": "floor((70 + 20 + 0) * 1.0) = 90"
+          },
+          "source": "01 active-form base stats + 00/09 stat formula + verify.py stat",
+          "status": "pass",
+          "rule": "No active-form receipt = no form-based stat/speed/damage claim. Mega/state forms use active_form as stat_source."
+        },
+        "set_ok": true,
+        "slot": 1
+      }
+    ],
+    "team_gates": {
+      "individual_sets": {
+        "status": "pass",
+        "passed": 1,
+        "total": 1
+      },
+      "team_size": {
+        "status": "fail",
+        "expected": 6,
+        "actual": 1
+      },
+      "active_form_resolution": {
+        "status": "pass",
+        "passed": 1,
+        "total": 1,
+        "active_changed": [],
+        "failures": [],
+        "rule": "team_form selects the roster slot; active_form is the battle stat/type/ability source."
+      },
+      "stat_spreads_0_32_66": {
+        "status": "pass",
+        "spread_required": true,
+        "passed": 1,
+        "total": 1,
+        "failures": []
+      },
+      "displayed_stats": {
+        "status": "pass",
+        "stat_required": true,
+        "passed": 1,
+        "total": 1,
+        "failures": [],
+        "rule": "No stat receipt = no public displayed stat number. Nature + 0-32/66 spread are required."
+      },
+      "unique_items_item_clause": {
+        "status": "pass",
+        "item_clause": true,
+        "duplicates": {}
+      },
+      "priority_mechanics": {
+        "status": "pass",
+        "receipt_count": 2,
+        "receipts": [
+          {
+            "entity": "priority_receipt",
+            "pokemon_query": "Sinistcha",
+            "move_query": "Rage Powder",
+            "ability_query": "Heatproof",
+            "source": "05-07 move legality + 01 ability + 00/04/09 mechanics",
+            "move": {
+              "entity": "move",
+              "pokemon_id": "sinistcha",
+              "move_id": "ragepowder",
+              "move_name": "Rage Powder",
+              "type": "Bug",
+              "emoji": "🐞",
+              "display": "🐞 Rage Powder",
+              "category": "Status",
+              "power": "",
+              "accuracy": "",
+              "source": "05-07",
+              "status": "pass"
+            },
+            "ability": {
+              "entity": "ability",
+              "pokemon_id": "sinistcha",
+              "ability_name": "Heatproof",
+              "ability_id": "heatproof",
+              "source": "01",
+              "status": "pass"
+            },
+            "status": "pass",
+            "move_id": "ragepowder",
+            "move_name": "Rage Powder",
+            "category": "Status",
+            "base_priority": 2,
+            "effective_priority": 2,
+            "prankster_applied": false,
+            "rule_note": "redirection support; powder/grass/ability exceptions must be checked separately if relevant",
+            "conditional_priority": "",
+            "priority_order_rule": "Priority bracket is checked before Speed. Speed only breaks ties inside the same priority bracket.",
+            "caveat": "Targeting, immunity, terrain, Protect/Wide Guard, redirection, and ability/item exceptions still require board checks before a final turn command."
+          },
+          {
+            "entity": "priority_receipt",
+            "pokemon_query": "Sinistcha",
+            "move_query": "Protect",
+            "ability_query": "Heatproof",
+            "source": "05-07 move legality + 01 ability + 00/04/09 mechanics",
+            "move": {
+              "entity": "move",
+              "pokemon_id": "sinistcha",
+              "move_id": "protect",
+              "move_name": "Protect",
+              "type": "Normal",
+              "emoji": "⚪",
+              "display": "⚪ Protect",
+              "category": "Status",
+              "power": "",
+              "accuracy": "",
+              "source": "05-07",
+              "status": "pass"
+            },
+            "ability": {
+              "entity": "ability",
+              "pokemon_id": "sinistcha",
+              "ability_name": "Heatproof",
+              "ability_id": "heatproof",
+              "source": "01",
+              "status": "pass"
+            },
+            "status": "pass",
+            "move_id": "protect",
+            "move_name": "Protect",
+            "category": "Status",
+            "base_priority": 4,
+            "effective_priority": 4,
+            "prankster_applied": false,
+            "rule_note": "defensive protection bracket",
+            "conditional_priority": "",
+            "priority_order_rule": "Priority bracket is checked before Speed. Speed only breaks ties inside the same priority bracket.",
+            "caveat": "Targeting, immunity, terrain, Protect/Wide Guard, redirection, and ability/item exceptions still require board checks before a final turn command."
+          }
+        ],
+        "rule": "Priority bracket is checked before Speed; Speed only orders Pokémon inside the same priority bracket."
+      },
+      "team_fit": {
+        "entity": "team_fit_receipt",
+        "status": "fail",
+        "team_speed_modes": [
+          "none"
+        ],
+        "team_mode_explanation": "No explicit speed-control mode detected; speed investment must be justified by local role or benchmarks.",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "item": "Sitrus Berry",
+            "speed_role": "SUPPORT",
+            "base_spe": 70,
+            "spe_investment": 0,
+            "item_source": "",
+            "spread_source": "",
+            "moves_source": "",
+            "status": "fail",
+            "warnings": []
+          }
+        ],
+        "failures": [
+          {
+            "code": "FAIL_ITEM_SOURCE_UNLABELED",
+            "pokemon": "Sinistcha",
+            "detail": "item_source/item_provenance must be one of the approved provenance labels"
+          },
+          {
+            "code": "FAIL_SPREAD_SOURCE_UNLABELED",
+            "pokemon": "Sinistcha",
+            "detail": "spread_source/spread_provenance must be one of the approved provenance labels"
+          }
+        ],
+        "warnings": [],
+        "rule": "Meta is the candidate pool; final item/spread must be locally legal, team-fit justified, and provenance-labeled."
+      },
+      "item_provenance": {
+        "status": "fail",
+        "failures": [
+          {
+            "code": "FAIL_ITEM_SOURCE_UNLABELED",
+            "pokemon": "Sinistcha",
+            "detail": "item_source/item_provenance must be one of the approved provenance labels"
+          }
+        ],
+        "allowed_labels": [
+          "DAMAGE_BENCHMARK",
+          "EXPERIMENTAL",
+          "ITEM_CLAUSE_REPAIR",
+          "LOCAL_BENCHMARK_OVERRIDE",
+          "LOCAL_GUESS",
+          "LOCAL_TEAM_FIT",
+          "META_DIRECT",
+          "META_PATTERN",
+          "META_SPREAD_DIRECT",
+          "SPEED_MODE_FIT",
+          "TOURNAMENT_LIST_DIRECT",
+          "USER_REQUESTED"
+        ],
+        "rule": "Every final item must be provenance-labeled."
+      },
+      "spread_provenance": {
+        "status": "fail",
+        "failures": [
+          {
+            "code": "FAIL_SPREAD_SOURCE_UNLABELED",
+            "pokemon": "Sinistcha",
+            "detail": "spread_source/spread_provenance must be one of the approved provenance labels"
+          }
+        ],
+        "allowed_labels": [
+          "DAMAGE_BENCHMARK",
+          "EXPERIMENTAL",
+          "ITEM_CLAUSE_REPAIR",
+          "LOCAL_BENCHMARK_OVERRIDE",
+          "LOCAL_GUESS",
+          "LOCAL_TEAM_FIT",
+          "META_DIRECT",
+          "META_PATTERN",
+          "META_SPREAD_DIRECT",
+          "SPEED_MODE_FIT",
+          "TOURNAMENT_LIST_DIRECT",
+          "USER_REQUESTED"
+        ],
+        "rule": "Every final spread must be provenance-labeled and team-fit justified."
+      },
+      "spread_fit": {
+        "entity": "spread_fit_receipt",
+        "status": "pass",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "final_source": "",
+            "proposed": {
+              "nature": "Bold",
+              "spread": {
+                "hp": 32,
+                "atk": 0,
+                "def": 32,
+                "spa": 2,
+                "spd": 0,
+                "spe": 0
+              },
+              "display": {
+                "compact": "HP32 Atk0 Def32 SpA2 SpD0 Spe0",
+                "verbose": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0",
+                "slash_with_header": "Order: HP / Atk / Def / SpA / SpD / Spe; Spread: 32 / 0 / 32 / 2 / 0 / 0",
+                "total": "66/66",
+                "order": "HP / Atk / Def / SpA / SpD / Spe"
+              }
+            },
+            "status": "pass",
+            "decision": "NO_META_BASELINE",
+            "warnings": []
+          }
+        ],
+        "failures": [],
+        "warnings": [],
+        "rule": "Use meta spread as baseline when available. Override only with speed/damage benchmark receipt; otherwise stay close to meta."
+      },
+      "item_spread_coherence": {
+        "entity": "item_spread_coherence_receipt",
+        "status": "pass",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "item": "Sitrus Berry",
+            "item_source": "",
+            "spread_source": "",
+            "reason_source": "missing",
+            "spread": {
+              "hp": 32,
+              "atk": 0,
+              "def": 32,
+              "spa": 2,
+              "spd": 0,
+              "spe": 0
+            },
+            "bulk_investment": 64,
+            "preferred_damage_stat": "spa",
+            "damage_investment": 2,
+            "speed_investment": 0,
+            "status": "pass",
+            "warnings": []
+          }
+        ],
+        "failures": [],
+        "warnings": [],
+        "rule": "Item, spread, and reason must agree. Focus Sash defaults to action value (Speed/damage/utility timing); bulky Sash spreads need meta or benchmark receipts."
+      },
+      "speed_plan": {
+        "entity": "speed_plan_receipt",
+        "status": "pass",
+        "team_speed_identity": "NO_EXPLICIT_SPEED_CONTROL",
+        "team_speed_modes": [
+          "none"
+        ],
+        "summary": "No Tailwind/Trick Room speed-control mode detected.",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "speed": 90,
+            "tailwind_speed": 180,
+            "speed_role": "SUPPORT",
+            "sets_tailwind": false,
+            "sets_trick_room": false
+          }
+        ],
+        "tailwind_beneficiaries": [],
+        "trick_room_beneficiaries": [],
+        "trick_room_partial_beneficiaries": [
+          "Sinistcha"
+        ],
+        "trick_room_hurts": [],
+        "warnings": [],
+        "rule": "Do not recommend Tailwind or Trick Room from vague labels like fast/slow/bulky. Compare actual Speed receipts of intended active Pokémon first."
+      },
+      "lead_plan": {
+        "entity": "lead_plan_receipt",
+        "status": "pass",
+        "candidate_leads": [],
+        "warnings": [],
+        "rule": "Lead planning must show Turn 1-2 candidate lines and rejected/conditional lines; do not jump from move presence to a final game plan."
+      },
+      "threat_audit": {
+        "entity": "threat_audit_receipt",
+        "status": "pass",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "types": "🌿 Grass / 👻 Ghost",
+            "weaknesses": [
+              {
+                "type": "Dark",
+                "type_id": "dark",
+                "multiplier": 2.0,
+                "display": "Dark → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Fire",
+                "type_id": "fire",
+                "multiplier": 2.0,
+                "display": "Fire → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Flying",
+                "type_id": "flying",
+                "multiplier": 2.0,
+                "display": "Flying → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Ghost",
+                "type_id": "ghost",
+                "multiplier": 2.0,
+                "display": "Ghost → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Ice",
+                "type_id": "ice",
+                "multiplier": 2.0,
+                "display": "Ice → Grass/Ghost = 2x super_effective"
+              }
+            ],
+            "resistances": [
+              {
+                "type": "Electric",
+                "type_id": "electric",
+                "multiplier": 0.5,
+                "display": "Electric → Grass/Ghost = 0.5x resisted"
+              },
+              {
+                "type": "Grass",
+                "type_id": "grass",
+                "multiplier": 0.5,
+                "display": "Grass → Grass/Ghost = 0.5x resisted"
+              },
+              {
+                "type": "Ground",
+                "type_id": "ground",
+                "multiplier": 0.5,
+                "display": "Ground → Grass/Ghost = 0.5x resisted"
+              },
+              {
+                "type": "Water",
+                "type_id": "water",
+                "multiplier": 0.5,
+                "display": "Water → Grass/Ghost = 0.5x resisted"
+              }
+            ],
+            "immunities": [
+              {
+                "type": "Fighting",
+                "type_id": "fighting",
+                "multiplier": 0.0,
+                "display": "Fighting → Grass/Ghost = 0x immune"
+              },
+              {
+                "type": "Normal",
+                "type_id": "normal",
+                "multiplier": 0.0,
+                "display": "Normal → Grass/Ghost = 0x immune"
+              }
+            ],
+            "base_stats": {
+              "hp": 71,
+              "atk": 60,
+              "def": 106,
+              "spa": 121,
+              "spd": 80,
+              "spe": 70
+            },
+            "stat_profile": {
+              "physical_bulk": "low",
+              "special_bulk": "low",
+              "speed_bucket": "mid",
+              "mixed_bulk_ok": false,
+              "summary": "HP 71 / Def 106 / SpD 80 / Spe 70: physical_bulk=low, special_bulk=low, speed=mid"
+            },
+            "board_risks": [],
+            "defensive_item": "Sitrus Berry",
+            "resist_berry_type": "",
+            "typechart_receipt_count": 18,
+            "sample_typechart_receipts": [
+              "Bug → Grass/Ghost = 1x neutral",
+              "Dark → Grass/Ghost = 2x super_effective",
+              "Dragon → Grass/Ghost = 1x neutral",
+              "Electric → Grass/Ghost = 0.5x resisted",
+              "Fairy → Grass/Ghost = 1x neutral",
+              "Fighting → Grass/Ghost = 0x immune"
+            ],
+            "status": "pass",
+            "warnings": []
+          }
+        ],
+        "failures": [],
+        "warnings": [],
+        "rule": "Risk/item/stat explanations require a semantic threat audit. Lint pass is not semantic verification."
+      },
+      "item_threat_fit": {
+        "entity": "item_threat_fit_receipt",
+        "status": "pass",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "item": "Sitrus Berry",
+            "resist_berry_type": "",
+            "weakness_count": 5,
+            "weaknesses": [
+              {
+                "type": "Dark",
+                "type_id": "dark",
+                "multiplier": 2.0,
+                "display": "Dark → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Fire",
+                "type_id": "fire",
+                "multiplier": 2.0,
+                "display": "Fire → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Flying",
+                "type_id": "flying",
+                "multiplier": 2.0,
+                "display": "Flying → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Ghost",
+                "type_id": "ghost",
+                "multiplier": 2.0,
+                "display": "Ghost → Grass/Ghost = 2x super_effective"
+              },
+              {
+                "type": "Ice",
+                "type_id": "ice",
+                "multiplier": 2.0,
+                "display": "Ice → Grass/Ghost = 2x super_effective"
+              }
+            ],
+            "board_risks": [],
+            "status": "pass",
+            "warnings": []
+          }
+        ],
+        "failures": [],
+        "warnings": [],
+        "rule": "Defensive items must answer the actual weakness profile and board risk, not a single remembered weakness."
+      },
+      "meta_threat_fit": {
+        "entity": "meta_threat_fit_receipt",
+        "status": "pass",
+        "source": "team receipt + interaction receipts + optional approved meta threat list",
+        "threats_checked": [],
+        "warnings": [],
+        "failures": [],
+        "rule": "No threatfit receipt = no 'team answers X' claim. Meta threat names must be connected to verified mechanics and team answers."
+      },
+      "mechanic_interactions": {
+        "status": "pass",
+        "receipts": [],
+        "rule": "Named mechanic counter claims require verify.py interaction receipts; threatfit supplies team-level interaction summaries."
+      },
+      "team_compatibility": {
+        "status": "fail",
+        "warning_count": 0,
+        "hard_fail_count": 1
+      },
+      "move_emoji_rendering": {
+        "status": "pass",
+        "source": "move.display from 05-07 receipt",
+        "rule": "Every public move display must use the verified move row type emoji."
+      },
+      "public_render": {
+        "status": "fail",
+        "source": "verify.py render",
+        "rule": "Public output must copy verifier-generated display fields; do not reconstruct manually."
+      }
+    },
+    "warnings": [],
+    "input_payload": {
+      "team": [
+        {
+          "pokemon": "Sinistcha",
+          "ability": "Heatproof",
+          "item": "Sitrus Berry",
+          "nature": "Bold",
+          "spread": {
+            "hp": 32,
+            "atk": 0,
+            "def": 32,
+            "spa": 2,
+            "spd": 0,
+            "spe": 0
+          },
+          "moves": [
+            "Matcha Gotcha",
+            "Shadow Ball",
+            "Rage Powder",
+            "Protect"
+          ]
+        }
+      ],
+      "item_clause": true,
+      "spread_required": true
+    },
+    "team_ok": false,
+    "public_render": {
+      "status": "fail",
+      "rule": "Public output must copy move.display/stat/damage/type/priority fields from verifier receipts; do not reconstruct them manually.",
+      "receipt_rows": [
+        {
+          "gate": "Pokémon",
+          "result": "1/1 PASS",
+          "source": "01"
+        },
+        {
+          "gate": "Abilities",
+          "result": "1/1 PASS",
+          "source": "01"
+        },
+        {
+          "gate": "Items exist",
+          "result": "1/1 PASS",
+          "source": "08"
+        },
+        {
+          "gate": "Active form resolution",
+          "result": "PASS",
+          "source": "verify.py active-form"
+        },
+        {
+          "gate": "Battle stat source",
+          "result": "PASS",
+          "source": "verify.py stat via active-form resolver"
+        },
+        {
+          "gate": "Moves",
+          "result": "4/4 PASS",
+          "source": "05-07"
+        },
+        {
+          "gate": "Move emoji rendering",
+          "result": "4/4 PASS",
+          "source": "move.display from 05-07 receipt"
+        },
+        {
+          "gate": "Stat spreads 0-32/66",
+          "result": "PASS",
+          "source": "verify.py team/spread"
+        },
+        {
+          "gate": "Displayed stats",
+          "result": "PASS",
+          "source": "verify.py stat"
+        },
+        {
+          "gate": "Unique items / Item Clause",
+          "result": "PASS",
+          "source": "verify.py team"
+        },
+        {
+          "gate": "Item provenance",
+          "result": "FAIL",
+          "source": "verify.py teamfit"
+        },
+        {
+          "gate": "Spread provenance",
+          "result": "FAIL",
+          "source": "verify.py teamfit"
+        },
+        {
+          "gate": "Meta spread fit",
+          "result": "PASS",
+          "source": "verify.py spreadfit"
+        },
+        {
+          "gate": "Item / spread coherence",
+          "result": "PASS",
+          "source": "verify.py"
+        },
+        {
+          "gate": "Team fit",
+          "result": "FAIL",
+          "source": "verify.py teamfit"
+        },
+        {
+          "gate": "Speed plan",
+          "result": "PASS",
+          "source": "verify.py speedplan"
+        },
+        {
+          "gate": "Lead plan",
+          "result": "PASS",
+          "source": "verify.py leadplan"
+        },
+        {
+          "gate": "Semantic threat audit",
+          "result": "PASS",
+          "source": "verify.py threataudit"
+        },
+        {
+          "gate": "Item threat fit",
+          "result": "PASS",
+          "source": "verify.py itemthreatfit"
+        },
+        {
+          "gate": "Priority mechanics",
+          "result": "PASS",
+          "source": "verify.py priority/mechanic"
+        },
+        {
+          "gate": "Mechanic interactions",
+          "result": "PASS",
+          "source": "verify.py interaction"
+        },
+        {
+          "gate": "Meta threat fit",
+          "result": "PASS",
+          "source": "verify.py threatfit"
+        },
+        {
+          "gate": "Team compatibility",
+          "result": "FAIL",
+          "source": "00/04 + verify.py team"
+        },
+        {
+          "gate": "Pokémon ASCII cards",
+          "result": "PASS",
+          "source": "assets/champions_ascii/ascii_bundle.json"
+        },
+        {
+          "gate": "Public render",
+          "result": "FAIL",
+          "source": "verify.py render"
+        }
+      ],
+      "team_table_rows": [
+        {
+          "slot": 1,
+          "pokemon": "Sinistcha",
+          "pokemon_id": "sinistcha",
+          "team_form_id": "sinistcha",
+          "active_form_id": "sinistcha",
+          "stat_source": "sinistcha",
+          "type": "🌿 Grass / 👻 Ghost",
+          "role": "",
+          "ability": "Heatproof",
+          "item": "Sitrus Berry",
+          "item_source": "",
+          "spread_source": "",
+          "speed_role": "SUPPORT",
+          "verified_moves": "🌿 Matcha Gotcha / 👻 Shadow Ball / 🐞 Rage Powder / ⚪ Protect",
+          "nature": "Bold",
+          "nature_effect": {
+            "nature": "Bold",
+            "plus": [
+              "Def"
+            ],
+            "minus": [
+              "Atk"
+            ],
+            "display": "+Def / -Atk",
+            "source": "NATURE_MODIFIERS enum in verify.py",
+            "rule": "Nature display must include +/- effect in public set/card output, e.g. Jolly (+Spe / -SpA)."
+          },
+          "nature_display": "Bold (+Def / -Atk)",
+          "spread_display": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0",
+          "spread_compact": "HP32 Atk0 Def32 SpA2 SpD0 Spe0",
+          "spread_total": "66/66",
+          "displayed_stats": {
+            "hp": 178,
+            "atk": 72,
+            "def": 173,
+            "spa": 143,
+            "spd": 100,
+            "spe": 90
+          },
+          "displayed_stats_display": {
+            "compact": "HP 178 / Atk 72 / Def 173 / SpA 143 / SpD 100 / Spe 90",
+            "verbose": "HP 178 / Atk 72 / Def 173 / SpA 143 / SpD 100 / Spe 90"
+          },
+          "pokemon_ascii_asset": {
+            "kind": "pokemon",
+            "id": "sinistcha",
+            "requested_id": "sinistcha",
+            "name": "Sinistcha",
+            "status": "pass",
+            "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+            "source": "assets/champions_ascii/ascii_bundle.json",
+            "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+          },
+          "item_ascii_asset": {
+            "status": "disabled",
+            "reason": "v29.38 keeps item ASCII disabled; cards use Pokémon ASCII only"
+          }
+        }
+      ],
+      "set_note_blocks": [
+        {
+          "slot": 1,
+          "pokemon": "Sinistcha",
+          "item": "Sitrus Berry",
+          "ability": "Heatproof",
+          "role": "",
+          "nature": "Bold",
+          "nature_effect": {
+            "nature": "Bold",
+            "plus": [
+              "Def"
+            ],
+            "minus": [
+              "Atk"
+            ],
+            "display": "+Def / -Atk",
+            "source": "NATURE_MODIFIERS enum in verify.py",
+            "rule": "Nature display must include +/- effect in public set/card output, e.g. Jolly (+Spe / -SpA)."
+          },
+          "nature_display": "Bold (+Def / -Atk)",
+          "spread_display": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0",
+          "spread_compact": "HP32 Atk0 Def32 SpA2 SpD0 Spe0",
+          "spread_total": "66/66",
+          "displayed_stats": {
+            "hp": 178,
+            "atk": 72,
+            "def": 173,
+            "spa": 143,
+            "spd": 100,
+            "spe": 90
+          },
+          "displayed_stats_display": {
+            "compact": "HP 178 / Atk 72 / Def 173 / SpA 143 / SpD 100 / Spe 90",
+            "verbose": "HP 178 / Atk 72 / Def 173 / SpA 143 / SpD 100 / Spe 90"
+          },
+          "stat_source": "sinistcha",
+          "moves_display": "🌿 Matcha Gotcha / 👻 Shadow Ball / 🐞 Rage Powder / ⚪ Protect",
+          "move_list": [
+            "🌿 Matcha Gotcha",
+            "👻 Shadow Ball",
+            "🐞 Rage Powder",
+            "⚪ Protect"
+          ],
+          "item_source": "",
+          "spread_source": "",
+          "speed_role": "SUPPORT",
+          "spread_reason": [
+            "HP 32 เพื่อเพิ่ม bulk รวมและยืนในบอร์ด 2v2 ได้นานขึ้น",
+            "Def 32 เพื่อรับ physical damage/ยืนคู่กับแผน pivot หรือ setup"
+          ],
+          "spread_fit": {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "final_source": "",
+            "proposed": {
+              "nature": "Bold",
+              "spread": {
+                "hp": 32,
+                "atk": 0,
+                "def": 32,
+                "spa": 2,
+                "spd": 0,
+                "spe": 0
+              },
+              "display": {
+                "compact": "HP32 Atk0 Def32 SpA2 SpD0 Spe0",
+                "verbose": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0",
+                "slash_with_header": "Order: HP / Atk / Def / SpA / SpD / Spe; Spread: 32 / 0 / 32 / 2 / 0 / 0",
+                "total": "66/66",
+                "order": "HP / Atk / Def / SpA / SpD / Spe"
+              }
+            },
+            "status": "pass",
+            "decision": "NO_META_BASELINE",
+            "warnings": []
+          },
+          "pokemon_ascii_asset": {
+            "kind": "pokemon",
+            "id": "sinistcha",
+            "requested_id": "sinistcha",
+            "name": "Sinistcha",
+            "status": "pass",
+            "text": "         .::                          \n      .+***+.                         \n       +%##*+                         \n        *%##+=                        \n        :##**+:                       \n         :=-+-==:                     \n        .-=====+++=:                  \n        :=++++++==++-::......:.       \n        .-+++++++++==-:..::-=-:       \n       ...=+++++++==-==++*##%=        \n       ::--====--**##%%%%%+=++:       \n        --::-:..=%****####++*==.      \n        :-:-:...*++++++#%#*+#==.      \n         .:.....#+**%***%%*+---       \n          ::...:#*+**++*%#*==-        \n           .::.:##+*+=++++==:         \n             ...+*+++=*+++-           \n                 .:::-=: :=-          \n                          .:          ",
+            "source": "assets/champions_ascii/ascii_bundle.json",
+            "rule": "Pokémon ASCII art is an inline readability aid only; receipts/text labels remain source of truth."
+          },
+          "item_ascii_asset": {
+            "status": "disabled",
+            "reason": "v29.38 keeps item ASCII disabled; cards use Pokémon ASCII only"
+          }
+        }
+      ],
+      "warnings": [],
+      "ally_safety_matrices": [],
+      "mechanic_interactions": [],
+      "meta_threat_fit": {
+        "entity": "meta_threat_fit_receipt",
+        "status": "pass",
+        "source": "team receipt + interaction receipts + optional approved meta threat list",
+        "threats_checked": [],
+        "warnings": [],
+        "failures": [],
+        "rule": "No threatfit receipt = no 'team answers X' claim. Meta threat names must be connected to verified mechanics and team answers."
+      },
+      "spread_fit": {
+        "entity": "spread_fit_receipt",
+        "status": "pass",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "final_source": "",
+            "proposed": {
+              "nature": "Bold",
+              "spread": {
+                "hp": 32,
+                "atk": 0,
+                "def": 32,
+                "spa": 2,
+                "spd": 0,
+                "spe": 0
+              },
+              "display": {
+                "compact": "HP32 Atk0 Def32 SpA2 SpD0 Spe0",
+                "verbose": "HP 32 / Atk 0 / Def 32 / SpA 2 / SpD 0 / Spe 0",
+                "slash_with_header": "Order: HP / Atk / Def / SpA / SpD / Spe; Spread: 32 / 0 / 32 / 2 / 0 / 0",
+                "total": "66/66",
+                "order": "HP / Atk / Def / SpA / SpD / Spe"
+              }
+            },
+            "status": "pass",
+            "decision": "NO_META_BASELINE",
+            "warnings": []
+          }
+        ],
+        "failures": [],
+        "warnings": [],
+        "rule": "Use meta spread as baseline when available. Override only with speed/damage benchmark receipt; otherwise stay close to meta."
+      },
+      "speed_plan": {
+        "entity": "speed_plan_receipt",
+        "status": "pass",
+        "team_speed_identity": "NO_EXPLICIT_SPEED_CONTROL",
+        "team_speed_modes": [
+          "none"
+        ],
+        "summary": "No Tailwind/Trick Room speed-control mode detected.",
+        "slots": [
+          {
+            "slot": 1,
+            "pokemon": "Sinistcha",
+            "speed": 90,
+            "tailwind_speed": 180,
+            "speed_role": "SUPPORT",
+            "sets_tailwind": false,
+            "sets_trick_room": false
+          }
+        ],
+        "tailwind_beneficiaries": [],
+        "trick_room_beneficiaries": [],
+        "trick_room_partial_beneficiaries": [
+          "Sinistcha"
+        ],
+        "trick_room_hurts": [],
+        "warnings": [],
+        "rule": "Do not recommend Tailwind or Trick Room from vague labels like fast/slow/bulky. Compare actual Speed receipts of intended active Pokémon first."
+      },
+      "lead_plan": {
+        "entity": "lead_plan_receipt",
+        "status": "pass",
+        "candidate_leads": [],
+        "warnings": [],
+        "rule": "Lead planning must show Turn 1-2 candidate lines and rejected/conditional lines; do not jump from move presence to a final game plan."
+      },
+      "fail_codes": [
+        "FAIL_PUBLIC_RENDER_GATE"
+      ]
+    }
+  },
+  "team_gate": {
+    "team_ok": false,
+    "warnings": []
+  },
+  "defensive_matrix": {
+    "Sinistcha": {
+      "Bug": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Bug → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Dark": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Dark → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Dragon": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Dragon → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Electric": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Electric → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Fairy": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fairy → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Fighting": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fighting → Grass/Ghost = 0x immune",
+        "multiplier": 0.0,
+        "multiplier_display": "0x",
+        "label": "immune",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Fire": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fire → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Flying": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Flying → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Ghost": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Ghost → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Grass": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Grass → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Ground": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Ground → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Ice": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Ice → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Normal": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Normal → Grass/Ghost = 0x immune",
+        "multiplier": 0.0,
+        "multiplier_display": "0x",
+        "label": "immune",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Poison": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Poison → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Psychic": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Psychic → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Rock": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Rock → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Steel": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Steel → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      },
+      "Water": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Water → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09"
+      }
+    }
+  },
+  "offensive_matrix": {
+    "Sinistcha": {
+      "Matcha Gotcha": {
+        "move_receipt": {
+          "status": "pass",
+          "move": "Matcha Gotcha",
+          "move_id": "matchagotcha",
+          "type": "Grass",
+          "category": "Special",
+          "source": "08_global_moves_abilities_items.csv"
+        },
+        "targets": {
+          "Sinistcha": {
+            "entity": "type_effectiveness",
+            "status": "pass",
+            "display": "Grass → Grass/Ghost = 0.5x resisted",
+            "multiplier": 0.5,
+            "multiplier_display": "0.5x",
+            "label": "resisted",
+            "defender_types": [
+              "Grass",
+              "Ghost"
+            ],
+            "source": "01 defender typing + bundled type chart in 09"
+          }
+        }
+      },
+      "Shadow Ball": {
+        "move_receipt": {
+          "status": "pass",
+          "move": "Shadow Ball",
+          "move_id": "shadowball",
+          "type": "Ghost",
+          "category": "Special",
+          "source": "08_global_moves_abilities_items.csv"
+        },
+        "targets": {
+          "Sinistcha": {
+            "entity": "type_effectiveness",
+            "status": "pass",
+            "display": "Ghost → Grass/Ghost = 2x super_effective",
+            "multiplier": 2.0,
+            "multiplier_display": "2x",
+            "label": "super_effective",
+            "defender_types": [
+              "Grass",
+              "Ghost"
+            ],
+            "source": "01 defender typing + bundled type chart in 09"
+          }
+        }
+      },
+      "Rage Powder": {
+        "move_receipt": {
+          "status": "pass",
+          "move": "Rage Powder",
+          "move_id": "ragepowder",
+          "type": "Bug",
+          "category": "Status",
+          "source": "08_global_moves_abilities_items.csv"
+        },
+        "targets": {
+          "Sinistcha": {
+            "entity": "type_effectiveness",
+            "status": "pass",
+            "display": "Bug → Grass/Ghost = 1x neutral",
+            "multiplier": 1.0,
+            "multiplier_display": "1x",
+            "label": "neutral",
+            "defender_types": [
+              "Grass",
+              "Ghost"
+            ],
+            "source": "01 defender typing + bundled type chart in 09"
+          }
+        }
+      },
+      "Protect": {
+        "move_receipt": {
+          "status": "pass",
+          "move": "Protect",
+          "move_id": "protect",
+          "type": "Normal",
+          "category": "Status",
+          "source": "08_global_moves_abilities_items.csv"
+        },
+        "targets": {
+          "Sinistcha": {
+            "entity": "type_effectiveness",
+            "status": "pass",
+            "display": "Normal → Grass/Ghost = 0x immune",
+            "multiplier": 0.0,
+            "multiplier_display": "0x",
+            "label": "immune",
+            "defender_types": [
+              "Grass",
+              "Ghost"
+            ],
+            "source": "01 defender typing + bundled type chart in 09"
+          }
+        }
+      }
+    }
+  },
+  "receipt_counts": {
+    "defensive_typechart_receipts": 18,
+    "offensive_typechart_receipts": 4
+  },
+  "failures": [],
+  "warnings": [],
+  "rule": "No public type matchup/weakness/resistance/coverage claim without direct typechart, type-matrix, or damage receipt provenance. Defensive matrix runs all bundled attacking types into every team slot; offensive matrix uses only actual move types on the submitted sets."
+}
