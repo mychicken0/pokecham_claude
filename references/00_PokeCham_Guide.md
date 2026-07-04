@@ -1,4 +1,4 @@
-# 00 — PokeCham Main Contract v29.43
+# 00 — PokeCham Main Contract v29.44
 
 This is the main contract. Other reference files own specialized details and should be cited by role, not duplicated.
 
@@ -69,7 +69,7 @@ Public output has no safe zones. Team, set, lead, risk, threat, example, explana
 
 - No local receipt = no named entity.
 - No meta baseline = no actionable final recommendation.
-- No typechart/type-matrix/damage type receipt = no type-effectiveness, weakness, resistance, immunity, or coverage claim.
+- No typechart/direction-explicit matrix/switch-safety/damage type receipt = no type-effectiveness, weakness, resistance, immunity, or coverage claim.
 - No typepassive receipt = no type passive/status/weather/hazard claim.
 - No mechanic/interaction/boardscan receipt = no mechanic, ally-damage, or board claim.
 - No stat receipt = no stat number or stat adjective such as ถึก/บาง/เร็ว/ช้า.
@@ -77,11 +77,23 @@ Public output has no safe zones. Team, set, lead, risk, threat, example, explana
 - No itemthreatfit receipt = no defensive berry/item reasoning.
 - No damage/sequence receipt = no KO, survival, roll, or staged-hit claim.
 - No counterroute receipt = no hard-counter/best-answer ranking.
+- No `switch-safety-matrix` or `incoming-defense-matrix` receipt = no public switch/swap/pivot/safe-switch recommendation.
+- No `outgoing-attack-matrix` or damage receipt = no public offensive coverage recommendation.
 
 When a named threat is not locally verified, use a generic category: “priority disruption”, “powder/status disruption”, “fast Water attacker”, “Dark-type pressure”, etc.
 
+## 6.1 Action matrix direction rule
 
-## 6.1 Receipt-strict rule
+Do not use ambiguous “attack table” / “def table” wording in final receipts or public tables. Use these names exactly:
+
+- `INCOMING_DEFENSE_MATRIX`: Direction `ENEMY MOVE TYPE → OUR DEFENDER`, cells are `x taken`.
+- `OUTGOING_ATTACK_MATRIX`: Direction `OUR MOVE → ENEMY DEFENDER`, cells are `x dealt`.
+- `SWITCH_SAFETY_MATRIX`: Direction `ENEMY LIKELY MOVE → OUR SWITCH-IN`, cells are `x taken`.
+
+Switch advice must cite the row used, e.g. `Garchomp: Fire = 0.5x taken, Rock = 0.5x taken, Electric = 0x taken`.
+
+
+## 6.2 Receipt-strict rule
 
 A local entity receipt proves only that the name exists. It does not prove exact mechanics.
 

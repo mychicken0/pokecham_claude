@@ -1,0 +1,14 @@
+{
+  "our_side": {
+    "active": ["Charizard", "Dragonite"],
+    "bench": ["Sylveon", "Kingambit", "Whimsicott", "Dragonite", "Garchomp"]
+  },
+  "enemy_side": {
+    "active": ["Charizard", "Tyranitar"],
+    "likely_moves": [
+      {"user": "Charizard-Mega-Y", "move": "Weather Ball", "resolved_type": "Fire", "context": "sun"},
+      {"user": "Tyranitar", "move": "Rock Slide", "resolved_type": "Rock"},
+      {"user": "Charizard-Mega-Y", "move": "Thunderbolt", "resolved_type": "Electric"}
+    ]
+  }
+}

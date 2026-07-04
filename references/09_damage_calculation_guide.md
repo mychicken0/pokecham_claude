@@ -1,4 +1,4 @@
-# 09 — Stat / Damage / Type / Board Math Guide v29.43
+# 09 — Stat / Damage / Type / Board Math Guide v29.44
 
 This file owns numeric and mechanical math. Source policy lives in `02`; command syntax lives in `04`.
 
@@ -54,11 +54,25 @@ Ground → Flying = 0x immune
 Ground → Sinistcha = 0.5x resisted
 ```
 
-## 4.1 Type matrix receipts
+## 4.1 Direction-explicit type matrices
 
-Use `verify.py type-matrix <team.json> [targets.json]` for team-level type analysis. Defensive matrix must cover every attacking type into every team slot. Offensive matrix must use only actual move types on the submitted sets.
+Use matrix commands for team-level type analysis. Do not use short labels like “attack table” or “def table” in public output.
 
-No public team matchup, coverage, weakness, resistance, or immunity claim should be written from memory when a type-matrix or direct typechart receipt can be generated.
+```text
+INCOMING_DEFENSE_MATRIX
+Direction: ENEMY MOVE TYPE → OUR DEFENDER
+Cell: x taken
+
+OUTGOING_ATTACK_MATRIX
+Direction: OUR MOVE → ENEMY DEFENDER
+Cell: x dealt
+
+SWITCH_SAFETY_MATRIX
+Direction: ENEMY LIKELY MOVE → OUR SWITCH-IN
+Cell: x taken
+```
+
+No public switch/swap, matchup, coverage, weakness, resistance, or immunity claim should be written from memory when a matrix or direct typechart receipt can be generated.
 
 ## 5. Type passive properties
 

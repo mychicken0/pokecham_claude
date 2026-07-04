@@ -1,4 +1,4 @@
-# 04 — Verification Harness Spec v29.43
+# 04 — Verification Harness Spec v29.44
 
 This file owns `scripts/verify.py` commands, receipts, lint/selfaudit, and fail/warning code groups.
 
@@ -16,25 +16,30 @@ python3 scripts/verify.py <command> ...
 ```text
 cli.py                  command router
 legacy.py               v29.42-compatible engine bridge
-type_matrix.py          defensive/offensive type matrix receipts
+type_matrix.py          incoming/outgoing direction-explicit type matrix receipts
+switch_matrix.py        switch safety matrix receipts
 regression.py           all-regression-tests
 ids.py/data_loader.py/... thin extraction seams for future module moves
 ```
 
 The facade is intentional: external skill docs and user workflows must not call multiple scripts directly.
 
-## Type matrix command
+## Direction-explicit matrix commands
 
 ```bash
-python3 scripts/verify.py type-matrix <team.json> [targets.json]
+python3 scripts/verify.py type-matrix <team.json> [targets.json] [--mode incoming-defense|outgoing-attack]
+python3 scripts/verify.py incoming-defense-matrix <team.json>
+python3 scripts/verify.py outgoing-attack-matrix <our_team.json> <enemy_targets.json>
+python3 scripts/verify.py switch-safety-matrix <board.json>
 ```
 
-Purpose: build receipt-backed type tables.
+Purpose: build receipt-backed type tables without attacker/defender direction ambiguity.
 
-- Defensive matrix: all bundled attacking types into every submitted team slot.
-- Offensive matrix: only actual move types from the submitted set into supplied targets; if no targets are supplied, the submitted team is used as a local sanity target list.
+- `INCOMING_DEFENSE_MATRIX`: Direction `ENEMY MOVE TYPE → OUR DEFENDER`; cells must be public-written as `x taken`.
+- `OUTGOING_ATTACK_MATRIX`: Direction `OUR MOVE → ENEMY DEFENDER`; cells must be public-written as `x dealt`.
+- `SWITCH_SAFETY_MATRIX`: Direction `ENEMY LIKELY MOVE → OUR SWITCH-IN`; cells must be public-written as `x taken`.
 
-Public-use rule: matchup/weakness/resistance/coverage claims must cite direct `typechart`, `type-matrix`, or damage typechart provenance.
+Public-use rule: switch/swap/pivot advice requires `switch-safety-matrix` or `incoming-defense-matrix`; offensive coverage advice requires `outgoing-attack-matrix` or damage receipt.
 
 ## Regression command
 
@@ -42,7 +47,7 @@ Public-use rule: matchup/weakness/resistance/coverage claims must cite direct `t
 python3 scripts/verify.py all-regression-tests
 ```
 
-Run before packaging verifier changes. It includes mechanic data lint/coverage, typechart traps including `Ground → Sinistcha = 0.5x resisted`, typepassive smoke tests, and mechanic interaction smoke tests.
+Run before packaging verifier changes. It includes mechanic data lint/coverage, typechart traps including `Ground → Sinistcha = 0.5x resisted` and `Fire → Kingambit = 2x super_effective`, typepassive/mechanic tests, and v29.44 switch-matrix lint gates.
 
 ## 1. Receipt principle
 
@@ -448,3 +453,16 @@ Rules:
 - Complete public OHKO/2HKO/survival claims require `damage_completeness=complete` and `public_ko_claim_allowed=true`.
 - Partial damage receipts must be described as partial/lower-bound and cannot support guaranteed KO/survival claims.
 - Do not add convenience mechanics for items absent from current 08; for this pack, Choice Band and Choice Specs are absent and remain blocked.
+
+### v29.44 action-matrix lint gates
+
+```text
+FAIL_SWITCH_RECOMMENDATION_WITHOUT_ACTION_MATRIX
+FAIL_AMBIGUOUS_TYPE_TABLE_DIRECTION
+FAIL_DEFENSIVE_MATRIX_CELL_MISSING_TAKEN
+FAIL_OFFENSIVE_MATRIX_CELL_MISSING_DEALT
+FAIL_AMBIGUOUS_ATTACK_DEFENSE_TABLE
+FAIL_MATRIX_RECEIPT_MISSING_DIRECTION
+```
+
+These gates prevent public prose from choosing switch-ins or presenting type tables without explicit direction and `taken`/`dealt` cell semantics.

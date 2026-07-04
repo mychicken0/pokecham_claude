@@ -1,6 +1,10 @@
 {
-  "mode": "type_matrix",
+  "mode": "incoming_defense_matrix",
   "engine_version": "v29.44-action-matrix-switchgate",
+  "matrix_kind": "INCOMING_DEFENSE_MATRIX",
+  "direction": "ENEMY_MOVE_TYPE_TO_OUR_DEFENDER",
+  "public_table_header_required": "ENEMY MOVE TYPE → OUR DEFENDER",
+  "cell_semantics": "x taken",
   "status": "pass",
   "team_status": "fail",
   "team_receipt": {
@@ -1530,449 +1534,313 @@
       ]
     }
   },
-  "team_gate": {
-    "team_ok": false,
-    "warnings": []
-  },
-  "matrices": {
-    "INCOMING_DEFENSE_MATRIX": {
-      "matrix_kind": "INCOMING_DEFENSE_MATRIX",
-      "direction": "ENEMY_MOVE_TYPE_TO_OUR_DEFENDER",
-      "cell_semantics": "x taken",
-      "rows": {
-        "Sinistcha": {
-          "Bug": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Bug → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Bug",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "1x taken"
-          },
-          "Dark": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Dark → Grass/Ghost = 2x super_effective",
-            "multiplier": 2.0,
-            "multiplier_display": "2x",
-            "label": "super_effective",
-            "attacking_type": "Dark",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "2x taken"
-          },
-          "Dragon": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Dragon → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Dragon",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "1x taken"
-          },
-          "Electric": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Electric → Grass/Ghost = 0.5x resisted",
-            "multiplier": 0.5,
-            "multiplier_display": "0.5x",
-            "label": "resisted",
-            "attacking_type": "Electric",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "0.5x taken"
-          },
-          "Fairy": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Fairy → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Fairy",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "1x taken"
-          },
-          "Fighting": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Fighting → Grass/Ghost = 0x immune",
-            "multiplier": 0.0,
-            "multiplier_display": "0x",
-            "label": "immune",
-            "attacking_type": "Fighting",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "0x taken"
-          },
-          "Fire": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Fire → Grass/Ghost = 2x super_effective",
-            "multiplier": 2.0,
-            "multiplier_display": "2x",
-            "label": "super_effective",
-            "attacking_type": "Fire",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "2x taken"
-          },
-          "Flying": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Flying → Grass/Ghost = 2x super_effective",
-            "multiplier": 2.0,
-            "multiplier_display": "2x",
-            "label": "super_effective",
-            "attacking_type": "Flying",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "2x taken"
-          },
-          "Ghost": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Ghost → Grass/Ghost = 2x super_effective",
-            "multiplier": 2.0,
-            "multiplier_display": "2x",
-            "label": "super_effective",
-            "attacking_type": "Ghost",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "2x taken"
-          },
-          "Grass": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Grass → Grass/Ghost = 0.5x resisted",
-            "multiplier": 0.5,
-            "multiplier_display": "0.5x",
-            "label": "resisted",
-            "attacking_type": "Grass",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "0.5x taken"
-          },
-          "Ground": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Ground → Grass/Ghost = 0.5x resisted",
-            "multiplier": 0.5,
-            "multiplier_display": "0.5x",
-            "label": "resisted",
-            "attacking_type": "Ground",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "0.5x taken"
-          },
-          "Ice": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Ice → Grass/Ghost = 2x super_effective",
-            "multiplier": 2.0,
-            "multiplier_display": "2x",
-            "label": "super_effective",
-            "attacking_type": "Ice",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "2x taken"
-          },
-          "Normal": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Normal → Grass/Ghost = 0x immune",
-            "multiplier": 0.0,
-            "multiplier_display": "0x",
-            "label": "immune",
-            "attacking_type": "Normal",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "0x taken"
-          },
-          "Poison": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Poison → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Poison",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "1x taken"
-          },
-          "Psychic": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Psychic → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Psychic",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "1x taken"
-          },
-          "Rock": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Rock → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Rock",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "1x taken"
-          },
-          "Steel": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Steel → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Steel",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "1x taken"
-          },
-          "Water": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Water → Grass/Ghost = 0.5x resisted",
-            "multiplier": 0.5,
-            "multiplier_display": "0.5x",
-            "label": "resisted",
-            "attacking_type": "Water",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_taken_by_defender",
-            "public_cell_suffix": "taken",
-            "value_display": "0.5x taken"
-          }
-        }
-      }
-    },
-    "OUTGOING_ATTACK_MATRIX": {
-      "matrix_kind": "OUTGOING_ATTACK_MATRIX",
-      "direction": "OUR_MOVE_TO_ENEMY_DEFENDER",
-      "cell_semantics": "x dealt",
-      "rows": {
-        "Sinistcha": {
-          "Matcha Gotcha": {
-            "move_receipt": {
-              "status": "pass",
-              "move": "Matcha Gotcha",
-              "move_id": "matchagotcha",
-              "type": "Grass",
-              "category": "Special",
-              "source": "08_global_moves_abilities_items.csv"
-            },
-            "enemy_targets": {
-              "Sinistcha": {
-                "entity": "type_effectiveness",
-                "status": "pass",
-                "display": "Grass → Grass/Ghost = 0.5x resisted",
-                "multiplier": 0.5,
-                "multiplier_display": "0.5x",
-                "label": "resisted",
-                "attacking_type": "Grass",
-                "defender_types": [
-                  "Grass",
-                  "Ghost"
-                ],
-                "source": "01 defender typing + bundled type chart in 09",
-                "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-                "public_cell_suffix": "dealt",
-                "value_display": "0.5x dealt"
-              }
-            }
-          },
-          "Shadow Ball": {
-            "move_receipt": {
-              "status": "pass",
-              "move": "Shadow Ball",
-              "move_id": "shadowball",
-              "type": "Ghost",
-              "category": "Special",
-              "source": "08_global_moves_abilities_items.csv"
-            },
-            "enemy_targets": {
-              "Sinistcha": {
-                "entity": "type_effectiveness",
-                "status": "pass",
-                "display": "Ghost → Grass/Ghost = 2x super_effective",
-                "multiplier": 2.0,
-                "multiplier_display": "2x",
-                "label": "super_effective",
-                "attacking_type": "Ghost",
-                "defender_types": [
-                  "Grass",
-                  "Ghost"
-                ],
-                "source": "01 defender typing + bundled type chart in 09",
-                "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-                "public_cell_suffix": "dealt",
-                "value_display": "2x dealt"
-              }
-            }
-          },
-          "Rage Powder": {
-            "move_receipt": {
-              "status": "pass",
-              "move": "Rage Powder",
-              "move_id": "ragepowder",
-              "type": "Bug",
-              "category": "Status",
-              "source": "08_global_moves_abilities_items.csv"
-            },
-            "enemy_targets": {
-              "Sinistcha": {
-                "entity": "type_effectiveness",
-                "status": "pass",
-                "display": "Bug → Grass/Ghost = 1x neutral",
-                "multiplier": 1.0,
-                "multiplier_display": "1x",
-                "label": "neutral",
-                "attacking_type": "Bug",
-                "defender_types": [
-                  "Grass",
-                  "Ghost"
-                ],
-                "source": "01 defender typing + bundled type chart in 09",
-                "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-                "public_cell_suffix": "dealt",
-                "value_display": "1x dealt"
-              }
-            }
-          },
-          "Protect": {
-            "move_receipt": {
-              "status": "pass",
-              "move": "Protect",
-              "move_id": "protect",
-              "type": "Normal",
-              "category": "Status",
-              "source": "08_global_moves_abilities_items.csv"
-            },
-            "enemy_targets": {
-              "Sinistcha": {
-                "entity": "type_effectiveness",
-                "status": "pass",
-                "display": "Normal → Grass/Ghost = 0x immune",
-                "multiplier": 0.0,
-                "multiplier_display": "0x",
-                "label": "immune",
-                "attacking_type": "Normal",
-                "defender_types": [
-                  "Grass",
-                  "Ghost"
-                ],
-                "source": "01 defender typing + bundled type chart in 09",
-                "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-                "public_cell_suffix": "dealt",
-                "value_display": "0x dealt"
-              }
-            }
-          }
-        }
+  "rows": {
+    "Sinistcha": {
+      "Bug": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Bug → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Bug",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      },
+      "Dark": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Dark → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Dark",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      },
+      "Dragon": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Dragon → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Dragon",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      },
+      "Electric": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Electric → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Electric",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      },
+      "Fairy": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fairy → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Fairy",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      },
+      "Fighting": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fighting → Grass/Ghost = 0x immune",
+        "multiplier": 0.0,
+        "multiplier_display": "0x",
+        "label": "immune",
+        "attacking_type": "Fighting",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0x taken"
+      },
+      "Fire": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Fire → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Fire",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      },
+      "Flying": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Flying → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Flying",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      },
+      "Ghost": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Ghost → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Ghost",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      },
+      "Grass": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Grass → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Grass",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      },
+      "Ground": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Ground → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Ground",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
+      },
+      "Ice": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Ice → Grass/Ghost = 2x super_effective",
+        "multiplier": 2.0,
+        "multiplier_display": "2x",
+        "label": "super_effective",
+        "attacking_type": "Ice",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "2x taken"
+      },
+      "Normal": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Normal → Grass/Ghost = 0x immune",
+        "multiplier": 0.0,
+        "multiplier_display": "0x",
+        "label": "immune",
+        "attacking_type": "Normal",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0x taken"
+      },
+      "Poison": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Poison → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Poison",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      },
+      "Psychic": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Psychic → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Psychic",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      },
+      "Rock": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Rock → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Rock",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      },
+      "Steel": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Steel → Grass/Ghost = 1x neutral",
+        "multiplier": 1.0,
+        "multiplier_display": "1x",
+        "label": "neutral",
+        "attacking_type": "Steel",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "1x taken"
+      },
+      "Water": {
+        "entity": "type_effectiveness",
+        "status": "pass",
+        "display": "Water → Grass/Ghost = 0.5x resisted",
+        "multiplier": 0.5,
+        "multiplier_display": "0.5x",
+        "label": "resisted",
+        "attacking_type": "Water",
+        "defender_types": [
+          "Grass",
+          "Ghost"
+        ],
+        "source": "01 defender typing + bundled type chart in 09",
+        "cell_semantics": "damage_multiplier_taken_by_defender",
+        "public_cell_suffix": "taken",
+        "value_display": "0.5x taken"
       }
     }
   },
@@ -2283,126 +2151,6 @@
         "cell_semantics": "damage_multiplier_taken_by_defender",
         "public_cell_suffix": "taken",
         "value_display": "0.5x taken"
-      }
-    }
-  },
-  "offensive_matrix": {
-    "Sinistcha": {
-      "Matcha Gotcha": {
-        "move_receipt": {
-          "status": "pass",
-          "move": "Matcha Gotcha",
-          "move_id": "matchagotcha",
-          "type": "Grass",
-          "category": "Special",
-          "source": "08_global_moves_abilities_items.csv"
-        },
-        "enemy_targets": {
-          "Sinistcha": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Grass → Grass/Ghost = 0.5x resisted",
-            "multiplier": 0.5,
-            "multiplier_display": "0.5x",
-            "label": "resisted",
-            "attacking_type": "Grass",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-            "public_cell_suffix": "dealt",
-            "value_display": "0.5x dealt"
-          }
-        }
-      },
-      "Shadow Ball": {
-        "move_receipt": {
-          "status": "pass",
-          "move": "Shadow Ball",
-          "move_id": "shadowball",
-          "type": "Ghost",
-          "category": "Special",
-          "source": "08_global_moves_abilities_items.csv"
-        },
-        "enemy_targets": {
-          "Sinistcha": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Ghost → Grass/Ghost = 2x super_effective",
-            "multiplier": 2.0,
-            "multiplier_display": "2x",
-            "label": "super_effective",
-            "attacking_type": "Ghost",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-            "public_cell_suffix": "dealt",
-            "value_display": "2x dealt"
-          }
-        }
-      },
-      "Rage Powder": {
-        "move_receipt": {
-          "status": "pass",
-          "move": "Rage Powder",
-          "move_id": "ragepowder",
-          "type": "Bug",
-          "category": "Status",
-          "source": "08_global_moves_abilities_items.csv"
-        },
-        "enemy_targets": {
-          "Sinistcha": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Bug → Grass/Ghost = 1x neutral",
-            "multiplier": 1.0,
-            "multiplier_display": "1x",
-            "label": "neutral",
-            "attacking_type": "Bug",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-            "public_cell_suffix": "dealt",
-            "value_display": "1x dealt"
-          }
-        }
-      },
-      "Protect": {
-        "move_receipt": {
-          "status": "pass",
-          "move": "Protect",
-          "move_id": "protect",
-          "type": "Normal",
-          "category": "Status",
-          "source": "08_global_moves_abilities_items.csv"
-        },
-        "enemy_targets": {
-          "Sinistcha": {
-            "entity": "type_effectiveness",
-            "status": "pass",
-            "display": "Normal → Grass/Ghost = 0x immune",
-            "multiplier": 0.0,
-            "multiplier_display": "0x",
-            "label": "immune",
-            "attacking_type": "Normal",
-            "defender_types": [
-              "Grass",
-              "Ghost"
-            ],
-            "source": "01 defender typing + bundled type chart in 09",
-            "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-            "public_cell_suffix": "dealt",
-            "value_display": "0x dealt"
-          }
-        }
       }
     }
   },
@@ -2820,113 +2568,11 @@
         "public_cell_suffix": "taken",
         "value_display": "0.5x taken"
       }
-    },
-    {
-      "matrix_kind": "OUTGOING_ATTACK_MATRIX",
-      "direction": "OUR_MOVE_TO_ENEMY_DEFENDER",
-      "our_attacker": "Sinistcha",
-      "our_move": "Matcha Gotcha",
-      "our_move_type": "Grass",
-      "enemy_defender": "Sinistcha",
-      "cell": {
-        "entity": "type_effectiveness",
-        "status": "pass",
-        "display": "Grass → Grass/Ghost = 0.5x resisted",
-        "multiplier": 0.5,
-        "multiplier_display": "0.5x",
-        "label": "resisted",
-        "attacking_type": "Grass",
-        "defender_types": [
-          "Grass",
-          "Ghost"
-        ],
-        "source": "01 defender typing + bundled type chart in 09",
-        "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-        "public_cell_suffix": "dealt",
-        "value_display": "0.5x dealt"
-      }
-    },
-    {
-      "matrix_kind": "OUTGOING_ATTACK_MATRIX",
-      "direction": "OUR_MOVE_TO_ENEMY_DEFENDER",
-      "our_attacker": "Sinistcha",
-      "our_move": "Shadow Ball",
-      "our_move_type": "Ghost",
-      "enemy_defender": "Sinistcha",
-      "cell": {
-        "entity": "type_effectiveness",
-        "status": "pass",
-        "display": "Ghost → Grass/Ghost = 2x super_effective",
-        "multiplier": 2.0,
-        "multiplier_display": "2x",
-        "label": "super_effective",
-        "attacking_type": "Ghost",
-        "defender_types": [
-          "Grass",
-          "Ghost"
-        ],
-        "source": "01 defender typing + bundled type chart in 09",
-        "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-        "public_cell_suffix": "dealt",
-        "value_display": "2x dealt"
-      }
-    },
-    {
-      "matrix_kind": "OUTGOING_ATTACK_MATRIX",
-      "direction": "OUR_MOVE_TO_ENEMY_DEFENDER",
-      "our_attacker": "Sinistcha",
-      "our_move": "Rage Powder",
-      "our_move_type": "Bug",
-      "enemy_defender": "Sinistcha",
-      "cell": {
-        "entity": "type_effectiveness",
-        "status": "pass",
-        "display": "Bug → Grass/Ghost = 1x neutral",
-        "multiplier": 1.0,
-        "multiplier_display": "1x",
-        "label": "neutral",
-        "attacking_type": "Bug",
-        "defender_types": [
-          "Grass",
-          "Ghost"
-        ],
-        "source": "01 defender typing + bundled type chart in 09",
-        "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-        "public_cell_suffix": "dealt",
-        "value_display": "1x dealt"
-      }
-    },
-    {
-      "matrix_kind": "OUTGOING_ATTACK_MATRIX",
-      "direction": "OUR_MOVE_TO_ENEMY_DEFENDER",
-      "our_attacker": "Sinistcha",
-      "our_move": "Protect",
-      "our_move_type": "Normal",
-      "enemy_defender": "Sinistcha",
-      "cell": {
-        "entity": "type_effectiveness",
-        "status": "pass",
-        "display": "Normal → Grass/Ghost = 0x immune",
-        "multiplier": 0.0,
-        "multiplier_display": "0x",
-        "label": "immune",
-        "attacking_type": "Normal",
-        "defender_types": [
-          "Grass",
-          "Ghost"
-        ],
-        "source": "01 defender typing + bundled type chart in 09",
-        "cell_semantics": "damage_multiplier_dealt_to_enemy_defender",
-        "public_cell_suffix": "dealt",
-        "value_display": "0x dealt"
-      }
     }
   ],
   "receipt_counts": {
-    "incoming_defense_typechart_receipts": 18,
-    "outgoing_attack_typechart_receipts": 4
+    "incoming_defense_typechart_receipts": 18
   },
   "failures": [],
-  "warnings": [],
-  "rule": "Direction is mandatory. INCOMING_DEFENSE_MATRIX = ENEMY MOVE TYPE → OUR DEFENDER, x taken. OUTGOING_ATTACK_MATRIX = OUR MOVE → ENEMY DEFENDER, x dealt. No public type/switch/coverage claim without direct typechart, direction-explicit matrix, switch-safety, or damage receipt provenance."
+  "rule": "Use this matrix before public switch/pivot/defensive resistance/weakness claims. Direction is ENEMY MOVE TYPE → OUR DEFENDER; cells must be written as x taken."
 }

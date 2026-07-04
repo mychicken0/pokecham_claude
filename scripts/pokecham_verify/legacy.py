@@ -4848,6 +4848,120 @@ def _is_caveat_or_audit_line(line: str) -> bool:
     return bool(CAVEAT_OR_AUDIT_LINE_RE.search(str(line or "")))
 
 
+# v29.44 action-matrix / direction-explicit table gates.
+MATRIX_KINDS_V29_44 = {"INCOMING_DEFENSE_MATRIX", "OUTGOING_ATTACK_MATRIX", "SWITCH_SAFETY_MATRIX"}
+SWITCH_ADVICE_RE = re.compile(
+    r"(?i)(\bswap\b|\bswitch\b|\bpivot\b|safe\s*switch|switch\s*in|สลับ|เปลี่ยน|ส่ง.+เข้า|ควร.+(?:เข้า|รับ)|รับ(?:ดาเมจ|ท่า)?|ต้าน)")
+OFFENSIVE_COVERAGE_RE = re.compile(
+    r"(?i)(coverage|ตี(?:แรง|เข้า|ใส่)|กด.+ใส่|super\s*effective|weakness\s*coverage|แทง|ล้ม)")
+DIRECTION_LINE_RE = re.compile(
+    r"(?i)(ENEMY\s+(?:MOVE\s+TYPE|LIKELY\s+MOVE)\s*(?:→|->)\s*OUR\s+(?:DEFENDER|SWITCH[-\s]*IN)|OUR\s+MOVE\s*(?:→|->)\s*ENEMY\s+DEFENDER)")
+AMBIGUOUS_TYPE_TABLE_RE = re.compile(
+    r"(?i)(Fire|Water|Electric|Grass|Ice|Fighting|Poison|Ground|Flying|Psychic|Bug|Rock|Ghost|Dragon|Dark|Steel|Fairy).*(Fire|Water|Electric|Grass|Ice|Fighting|Poison|Ground|Flying|Psychic|Bug|Rock|Ghost|Dragon|Dark|Steel|Fairy).*(?:0\s*x|0\.5\s*x|1\s*x|2\s*x|4\s*x|neutral|resisted|immune|super[_\s-]*effective)")
+
+
+def _collect_matrix_kinds_from_receipt(obj):
+    kinds = set()
+    matrices = []
+    def walk(x):
+        if isinstance(x, dict):
+            mk = x.get("matrix_kind")
+            if mk in MATRIX_KINDS_V29_44:
+                kinds.add(mk)
+                matrices.append(x)
+            for v in x.values():
+                walk(v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(v)
+    walk(obj or {})
+    return kinds, matrices
+
+
+def _action_matrix_claim_guard(answer_text: str, receipt: dict):
+    """Block switch/swap and direction-ambiguous type tables without matrix receipts.
+
+    This specifically targets the v29.44 failure mode where the assistant has a
+    valid type engine but still answers from memory or swaps attacker/defender
+    direction in public advice.
+    """
+    failures = []
+    warnings = []
+    text = str(answer_text or "")
+    matrix_kinds, matrices = _collect_matrix_kinds_from_receipt(receipt or {})
+    has_incoming = "INCOMING_DEFENSE_MATRIX" in matrix_kinds
+    has_switch = "SWITCH_SAFETY_MATRIX" in matrix_kinds
+    has_outgoing = "OUTGOING_ATTACK_MATRIX" in matrix_kinds
+    has_damage = bool(_collect_damage_receipts(receipt or {}))
+
+    switch_lines = []
+    offensive_lines = []
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        if _is_caveat_or_audit_line(line):
+            continue
+        if SWITCH_ADVICE_RE.search(line):
+            switch_lines.append({"line": line_no, "text": line.strip()[:260]})
+        if OFFENSIVE_COVERAGE_RE.search(line):
+            offensive_lines.append({"line": line_no, "text": line.strip()[:260]})
+
+    if switch_lines and not (has_switch or has_incoming):
+        failures.append({
+            "code": "FAIL_SWITCH_RECOMMENDATION_WITHOUT_ACTION_MATRIX",
+            "detail": "Public swap/switch/pivot/defensive switch-in advice requires SWITCH_SAFETY_MATRIX or INCOMING_DEFENSE_MATRIX receipt. Do not choose switch-ins from memory.",
+            "claim_lines": switch_lines[:8],
+            "required_matrix_kinds": ["SWITCH_SAFETY_MATRIX", "INCOMING_DEFENSE_MATRIX"],
+        })
+    if offensive_lines and re.search(r"(?i)(coverage|super\s*effective|ตี(?:แรง|เข้า|ใส่)|กด.+ใส่)", text) and not (has_outgoing or has_damage):
+        warnings.append({
+            "code": "WARN_OFFENSIVE_COVERAGE_WITHOUT_OUTGOING_MATRIX",
+            "detail": "Offensive coverage advice should use OUTGOING_ATTACK_MATRIX or a damage receipt so attacker/defender direction cannot be swapped.",
+            "claim_lines": offensive_lines[:8],
+        })
+
+    # Public matrix/table formatting gates. These only apply when the answer is
+    # presenting a matrix/table, not when copying a single direct typechart line.
+    mentions_matrix = re.search(r"INCOMING_DEFENSE_MATRIX|OUTGOING_ATTACK_MATRIX|SWITCH_SAFETY_MATRIX|incoming defense matrix|outgoing attack matrix|switch safety matrix", text, re.I)
+    if mentions_matrix and not DIRECTION_LINE_RE.search(text):
+        failures.append({
+            "code": "FAIL_AMBIGUOUS_TYPE_TABLE_DIRECTION",
+            "detail": "Public type matrices must include an explicit direction line: ENEMY MOVE TYPE → OUR DEFENDER, ENEMY LIKELY MOVE → OUR SWITCH-IN, or OUR MOVE → ENEMY DEFENDER.",
+        })
+    if re.search(r"INCOMING_DEFENSE_MATRIX|SWITCH_SAFETY_MATRIX|incoming defense matrix|switch safety matrix", text, re.I) and not re.search(r"(?i)\btaken\b|โดน|รับ", text):
+        failures.append({
+            "code": "FAIL_DEFENSIVE_MATRIX_CELL_MISSING_TAKEN",
+            "detail": "Incoming/switch safety matrix cells must be phrased as x taken so the defender direction is clear.",
+        })
+    if re.search(r"OUTGOING_ATTACK_MATRIX|outgoing attack matrix", text, re.I) and not re.search(r"(?i)\bdealt\b|ทำดาเมจ|ใส่", text):
+        failures.append({
+            "code": "FAIL_OFFENSIVE_MATRIX_CELL_MISSING_DEALT",
+            "detail": "Outgoing attack matrix cells must be phrased as x dealt so the attacker direction is clear.",
+        })
+
+    # Header-like type tables with multipliers but no direction marker are a
+    # common source of attacker/defender inversion. Keep this fail narrow.
+    table_like_lines = []
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        if _is_caveat_or_audit_line(line):
+            continue
+        if AMBIGUOUS_TYPE_TABLE_RE.search(line) and not ("→" in line or "->" in line or "taken" in line.lower() or "dealt" in line.lower()):
+            table_like_lines.append({"line": line_no, "text": line.strip()[:260]})
+    if table_like_lines and not DIRECTION_LINE_RE.search(text):
+        failures.append({
+            "code": "FAIL_AMBIGUOUS_ATTACK_DEFENSE_TABLE",
+            "detail": "Type tables with multiple type columns and multipliers need an explicit direction line plus taken/dealt cells. Otherwise attack/defense direction can be swapped.",
+            "lines": table_like_lines[:8],
+        })
+
+    # Receipt integrity: matrix receipts themselves must carry direction.
+    for m in matrices:
+        mk = m.get("matrix_kind")
+        direction = m.get("direction")
+        if mk in MATRIX_KINDS_V29_44 and not direction:
+            failures.append({"code": "FAIL_MATRIX_RECEIPT_MISSING_DIRECTION", "matrix_kind": mk, "detail": "Every v29.44 matrix receipt must include explicit direction."})
+            break
+    return failures, warnings
+
+
 def _is_explicit_entity_context(line: str, name: str, kind: str) -> bool:
     """True when a common-word name is clearly being used as a game entity."""
     txt = str(line or "")
@@ -4961,6 +5075,13 @@ def _collect_verified_entities_from_receipt(receipt: dict) -> dict:
                 add("move", x.get("move_name")); add("move", x.get("move_id"))
             elif x.get("mode") in {"damage_verification", "stateful_sequence_verification"} and status == "pass":
                 out["damage"] = True
+            # v29.44 matrix receipts authorize the public names appearing in the
+            # matrix rows/cells; they do not authorize unrelated entities.
+            if x.get("matrix_kind") in {"INCOMING_DEFENSE_MATRIX", "OUTGOING_ATTACK_MATRIX", "SWITCH_SAFETY_MATRIX"}:
+                for key in ("our_defender", "our_switch_in", "our_attacker", "enemy_defender"):
+                    add("pokemon", x.get(key))
+                for key in ("our_move", "enemy_likely_move"):
+                    add("move", x.get(key))
             for v in x.values():
                 walk(v)
         elif isinstance(x, list):
@@ -5530,6 +5651,9 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
     type_failures, type_warnings = _type_claim_guard(answer_text, receipt)
     failures.extend(type_failures)
     warnings.extend(type_warnings)
+    action_failures, action_warnings = _action_matrix_claim_guard(answer_text, receipt)
+    failures.extend(action_failures)
+    warnings.extend(action_warnings)
     entity_failures, entity_warnings = _public_entity_guard(answer_text, receipt)
     failures.extend(entity_failures)
     warnings.extend(entity_warnings)
@@ -5564,7 +5688,7 @@ def lint_public_output(answer_text: str, receipt: dict) -> dict:
         "failures": failures,
         "warnings": warnings,
         "typechart_receipts_found": [r.get("display") for r in _collect_typechart_receipts(receipt)],
-        "rule": "Final public output must match verifier/render fields. No local receipt = no named entity. No meta/player baseline receipt = no actionable final recommendation. No typechart/type-matrix receipt = no type claim. No typepassive receipt = no type passive/status/weather/hazard claim. No boardscan/interaction/mechanic/counterroute receipt = no mechanic, ally-damage, or hard-counter claim. Run selfaudit/lint before final. lint pass is not semantic verification; item/risk/stat/mechanic prose also needs threataudit, stat, mechanic, and itemthreatfit receipts. v29.42 strict mode: exact mechanics/multipliers/stages/turn counts must be receipt-backed by verifier/mechanic data or removed.",
+        "rule": "Final public output must match verifier/render fields. No local receipt = no named entity. No meta/player baseline receipt = no actionable final recommendation. No typechart/type-matrix receipt = no type claim. No typepassive receipt = no type passive/status/weather/hazard claim. No boardscan/interaction/mechanic/counterroute receipt = no mechanic, ally-damage, or hard-counter claim. Run selfaudit/lint before final. lint pass is not semantic verification; item/risk/stat/mechanic prose also needs threataudit, stat, mechanic, and itemthreatfit receipts. v29.44 action-matrix gate + v29.42 strict mode: exact mechanics/multipliers/stages/turn counts must be receipt-backed by verifier/mechanic data or removed.",
     }
 
 
